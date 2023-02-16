@@ -26,12 +26,36 @@ void MyGLWidget::initializeShader() {
 
     QString pointVert = qAppDir + "/Shader/point.vert";
     QString pointFrag = qAppDir + "/Shader/point.frag";
-    QString meshVert = qAppDir + "/Shader/mesh.vert";
-    QString meshFrag = qAppDir + "/Shader/mesh.frag";
-
     selectShader = new ShaderProgram(pointVert.toStdString().c_str(), pointFrag.toStdString().c_str());
 
+    QString meshVert = qAppDir + "/Shader/mesh.vert";
+    QString meshFrag = qAppDir + "/Shader/mesh.frag";
     meshShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
+
+}
+// initialize OpenGL
+void MyGLWidget::initializeGL(){
+    initializeShader();
+    glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
+    glFunc->glEnable(GL_DEPTH_TEST);
+    glFunc->glGenVertexArrays(1, &meshVAO);
+    glFunc->glGenBuffers(1, &meshVBO);
+    glFunc->glBindVertexArray(meshVAO);
+    glFunc->glBindBuffer(GL_ARRAY_BUFFER, meshVBO);
+
+    glFunc->glEnableVertexAttribArray(0);
+    glFunc->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glFunc->glEnableVertexAttribArray(1);
+    glFunc->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+}
+// PaintGL
+void MyGLWidget::paintGL(){
+    if (vertices.size() == 0)   return;
+    glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glFunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glFunc->glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
+    meshShader->use();
     meshShader->setUniformVec3("viewPos", QVector3D(0.0f, 0.0f, 3.0f));
     meshShader->setUniformVec3("material.ambient", QVector3D(0.5f, 0.5f, 0.5f));
     meshShader->setUniformVec3("material.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
@@ -47,30 +71,6 @@ void MyGLWidget::initializeShader() {
     meshShader->setUniformVec3("light2.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
     //mShader->setUniformVec3("light2.specular", QVector3D(0.1f, 0.1f, 0.1f));
     meshShader->setUniformVec3("light2.direction", QVector3D(1.0f, 1.0f, -3.0f));
-
-}
-// initialize OpenGL
-void MyGLWidget::initializeGL(){
-    initializeShader();
-    glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
-    glFunc->glEnable(GL_DEPTH_TEST);
-    glFunc->glGenVertexArrays(1, &meshVAO);
-    glFunc->glBindVertexArray(meshVAO);
-    glFunc->glGenBuffers(1, &meshVBO);
-    glFunc->glBindBuffer(GL_ARRAY_BUFFER, meshVBO);
-
-    glFunc->glEnableVertexAttribArray(0);
-    glFunc->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glFunc->glEnableVertexAttribArray(1);
-    glFunc->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
-}
-// PaintGL
-void MyGLWidget::paintGL(){
-    if (vertices.size() == 0)   return;
-    glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glFunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glFunc->glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
     meshShader->setUniformMat4("model", model);
     meshShader->setUniformMat4("view", camera->getViewMatrix());
     meshShader->setUniformMat4("proj", proj);

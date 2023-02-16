@@ -45,6 +45,8 @@ ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath){
 	ID->addShader(&verShader);
 	ID->addShader(&fraShader);
 	ID->link();
+}
+void ShaderProgram::use(){
 	ID->bind();
 }
 ShaderProgram::~ShaderProgram(){

@@ -5,6 +5,7 @@ class ShaderProgram{
 public:
 	ShaderProgram(const char* vertexPath, const char* fragmentPath);
 	~ShaderProgram();
+	void use();
 	void setUniformInt(const char* name, const int value)			const;
 	void setUniformFloat(const char* name, const GLfloat value)		const;
 	void setUniformMat4(const char* name, const QMatrix4x4 trans)	const;
