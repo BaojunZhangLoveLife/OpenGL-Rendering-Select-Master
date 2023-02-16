@@ -28,14 +28,6 @@ void MainWindow::addOpengGLWidget(){
     ui.openGLHorizontalLayout->addWidget(myMeshGLWidget);
 }
 
-// Choose File
-void MainWindow::chooseFile(){
-   
-    QString fileName = "C:/Project/OpenGL-Rendering-Select-Master/data/heart.txt";
-    meshDataProc->LoadPointData(fileName.toStdString().c_str());
-    pointData3D.resize(meshDataProc->pointData.size());
-    pointData3D = meshDataProc->pointData;
-}
 void MainWindow::gLWidgetUpdate() {
     myMeshGLWidget->update();
 }
