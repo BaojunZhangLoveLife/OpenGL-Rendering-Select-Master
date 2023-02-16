@@ -88,13 +88,13 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
     model.setToIdentity();
     modelSave.setToIdentity();
     if (event->buttons() & Qt::LeftButton) {
-            // Rotate the 3D image
-            GLfloat angleNow = qSqrt(qPow(subPoint.x(), 2) + qPow(subPoint.y(), 2)) / 5;
-            model.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
-            model = model * modelUse;
+        // Rotate the 3D image
+        GLfloat angleNow = qSqrt(qPow(subPoint.x(), 2) + qPow(subPoint.y(), 2)) / 5;
+        model.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
+        model = model * modelUse;
 
-            modelSave.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
-            modelSave = modelSave * modelUse;
+        modelSave.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
+        modelSave = modelSave * modelUse;
     }
     if (event->buttons() & Qt::RightButton) {
         model.translate((float)subPoint.x() / 200, (float)subPoint.y() / 200);

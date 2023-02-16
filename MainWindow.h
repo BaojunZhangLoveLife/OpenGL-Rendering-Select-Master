@@ -12,7 +12,6 @@ public:
 	~MainWindow();
 
 public slots:
-	void chooseFile();
 	void startRendering();
 	void gLWidgetUpdate();
 signals:

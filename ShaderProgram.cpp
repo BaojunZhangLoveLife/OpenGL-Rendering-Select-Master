@@ -5,10 +5,7 @@
 #include <sstream>
 #include <iostream>
 
-ShaderProgram::ShaderProgram(const char* vPath, const char* fPath)
-{
-	vertexPath = vPath;
-	fragmentPath = fPath;
+ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath){
 
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -19,8 +16,7 @@ ShaderProgram::ShaderProgram(const char* vPath, const char* fPath)
 
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	try
-	{
+	try{
 		vShaderFile.open(vertexPath);
 		fShaderFile.open(fragmentPath);
 
@@ -33,8 +29,7 @@ ShaderProgram::ShaderProgram(const char* vPath, const char* fPath)
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
 	}
-	catch (std::ifstream::failure e)
-	{
+	catch (std::ifstream::failure e){
 		std::cout << "ERROR::SHADER::FIEL_NOT_SUCCESSFULLY_READ" << std::endl;
 	}
 	const char* vShaderCode = vertexCode.c_str();
@@ -52,31 +47,24 @@ ShaderProgram::ShaderProgram(const char* vPath, const char* fPath)
 	ID->link();
 	ID->bind();
 }
-ShaderProgram::~ShaderProgram()
-{
+ShaderProgram::~ShaderProgram(){
 	delete ID;
 }
-void ShaderProgram::setUniformMat4(const char* name, const QMatrix4x4 trans) const
-{
+void ShaderProgram::setUniformMat4(const char* name, const QMatrix4x4 trans) const{
 	ID->setUniformValue(name, trans);
 }
-void ShaderProgram::setUniformMat3(const char* name, const QMatrix3x3 trans) const
-{
+void ShaderProgram::setUniformMat3(const char* name, const QMatrix3x3 trans) const{
 	ID->setUniformValue(name, trans);
 }
-void ShaderProgram::setUniformFloat(const char* name, const GLfloat value) const
-{
+void ShaderProgram::setUniformFloat(const char* name, const GLfloat value) const{
 	ID->setUniformValue(name, value);
 }
-void ShaderProgram::setUniformInt(const char* name, const int value) const
-{
+void ShaderProgram::setUniformInt(const char* name, const int value) const{
 	ID->setUniformValue(name, value);
 }
-void ShaderProgram::setUniformVec4(const char* name, const QVector4D value) const
-{
+void ShaderProgram::setUniformVec4(const char* name, const QVector4D value) const{
 	ID->setUniformValue(name, value);
 }
-void ShaderProgram::setUniformVec3(const char* name, const QVector3D value) const
-{
+void ShaderProgram::setUniformVec3(const char* name, const QVector3D value) const{
 	ID->setUniformValue(name, value);
 }
