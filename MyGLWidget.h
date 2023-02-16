@@ -37,7 +37,8 @@ protected:
     void translate_point(QPoint& p_ab);
 
 private:
-    ShaderProgram* mShader;
+    ShaderProgram* meshShader;
+    ShaderProgram* selectShader;
     QMatrix4x4 model;
     QMatrix4x4 modelUse;
     QMatrix4x4 modelSave;

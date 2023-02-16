@@ -40,25 +40,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QLineEdit" name="lineEdit_file">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="placeholderText">
-             <string>please enter to choose a file</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="openPushBtn">
-            <property name="text">
-             <string>Open File</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="horizontalLayout_2"/>
         </item>
        </layout>
       </item>

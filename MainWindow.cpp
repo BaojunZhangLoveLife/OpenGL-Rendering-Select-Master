@@ -11,7 +11,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     surface = new SurfaceReconsturction();
     isOpenGLThreadStart = true;
     addOpengGLWidget();
-    connect(ui.openPushBtn, SIGNAL(clicked()), this, SLOT(chooseFile()));
     connect(ui.startPushBtn, SIGNAL(clicked()), this, SLOT(startRendering()));
     connect(this, SIGNAL(signal_glUpdate()), this, SLOT(gLWidgetUpdate()));
 }
@@ -31,19 +30,22 @@ void MainWindow::addOpengGLWidget(){
 
 // Choose File
 void MainWindow::chooseFile(){
-    QString fileName = QFileDialog::getOpenFileName(nullptr, "open", ".", "*.txt");
-    if (!fileName.isEmpty()){
-        ui.lineEdit_file->setText(fileName);
-        meshDataProc->LoadPointData(fileName.toStdString().c_str());
-        pointData3D.resize(meshDataProc->pointData.size());
-        pointData3D = meshDataProc->pointData;
-    }
+   
+    QString fileName = "C:/Project/OpenGL-Rendering-Select-Master/data/heart.txt";
+    meshDataProc->LoadPointData(fileName.toStdString().c_str());
+    pointData3D.resize(meshDataProc->pointData.size());
+    pointData3D = meshDataProc->pointData;
 }
 void MainWindow::gLWidgetUpdate() {
     myMeshGLWidget->update();
 }
 // Begin render
 void MainWindow::startRendering(){
+    QString fileName = "C:/Project/OpenGL-Rendering-Select-Master/data/heart.txt";
+    meshDataProc->LoadPointData(fileName.toStdString().c_str());
+    pointData3D.resize(meshDataProc->pointData.size());
+    pointData3D = meshDataProc->pointData;
+
     QElapsedTimer mstimer;
     mstimer.start();
 
@@ -74,6 +76,7 @@ void MainWindow::startRendering(){
                         meshLineMarker += 3;
                     }
                     myMeshGLWidget->setImageData(meshData);
+                    emit signal_glUpdate();
                 }
             }
             if (pointLine >= pointData3D.size()){

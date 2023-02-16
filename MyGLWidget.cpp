@@ -12,7 +12,8 @@ MyGLWidget::MyGLWidget(QWidget* parent,int DT){
 }
 
 MyGLWidget::~MyGLWidget(){
-    delete mShader;
+    delete meshShader;
+    delete selectShader;
     glFunc->glDeleteVertexArrays(1, &meshVAO);
     glFunc->glDeleteBuffers(1, &meshVBO);
 }
@@ -22,31 +23,31 @@ void MyGLWidget::setImageData(std::vector<GLfloat> data){
 }
 void MyGLWidget::initializeShader() {
     QString qAppDir = QCoreApplication::applicationDirPath();
-    if (dataType == DataType::PointType) {
-        QString pointVert = qAppDir + "/Shader/point.vert";
-        QString pointFrag = qAppDir + "/Shader/point.frag";
-        mShader = new ShaderProgram(pointVert.toStdString().c_str(), pointFrag.toStdString().c_str());
-    }else {
-        QString meshVert = qAppDir + "/Shader/mesh.vert";
-        QString meshFrag = qAppDir + "/Shader/mesh.frag";
-        mShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
 
-        mShader->setUniformVec3("viewPos", QVector3D(0.0f, 0.0f, 3.0f));
-        mShader->setUniformVec3("material.ambient", QVector3D(0.5f, 0.5f, 0.5f));
-        mShader->setUniformVec3("material.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
-        //mShader->setUniformVec3("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
-        mShader->setUniformFloat("material.shininess", 16.0f);
+    QString pointVert = qAppDir + "/Shader/point.vert";
+    QString pointFrag = qAppDir + "/Shader/point.frag";
+    QString meshVert = qAppDir + "/Shader/mesh.vert";
+    QString meshFrag = qAppDir + "/Shader/mesh.frag";
 
-        mShader->setUniformVec3("light1.ambient", QVector3D(0.2f, 0.2f, 0.2f));
-        mShader->setUniformVec3("light1.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
-        //mShader->setUniformVec3("light1.specular", QVector3D(0.1f, 0.1f, 0.1f));
-        mShader->setUniformVec3("light1.direction", QVector3D(1.0f, 1.0f, 3.0f));
+    selectShader = new ShaderProgram(pointVert.toStdString().c_str(), pointFrag.toStdString().c_str());
 
-        mShader->setUniformVec3("light2.ambient", QVector3D(0.2f, 0.2f, 0.2f));
-        mShader->setUniformVec3("light2.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
-        //mShader->setUniformVec3("light2.specular", QVector3D(0.1f, 0.1f, 0.1f));
-        mShader->setUniformVec3("light2.direction", QVector3D(1.0f, 1.0f, -3.0f));
-    }
+    meshShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
+    meshShader->setUniformVec3("viewPos", QVector3D(0.0f, 0.0f, 3.0f));
+    meshShader->setUniformVec3("material.ambient", QVector3D(0.5f, 0.5f, 0.5f));
+    meshShader->setUniformVec3("material.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
+    //mShader->setUniformVec3("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
+    meshShader->setUniformFloat("material.shininess", 16.0f);
+
+    meshShader->setUniformVec3("light1.ambient", QVector3D(0.2f, 0.2f, 0.2f));
+    meshShader->setUniformVec3("light1.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
+    //mShader->setUniformVec3("light1.specular", QVector3D(0.1f, 0.1f, 0.1f));
+    meshShader->setUniformVec3("light1.direction", QVector3D(1.0f, 1.0f, 3.0f));
+
+    meshShader->setUniformVec3("light2.ambient", QVector3D(0.2f, 0.2f, 0.2f));
+    meshShader->setUniformVec3("light2.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
+    //mShader->setUniformVec3("light2.specular", QVector3D(0.1f, 0.1f, 0.1f));
+    meshShader->setUniformVec3("light2.direction", QVector3D(1.0f, 1.0f, -3.0f));
+
 }
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
@@ -57,24 +58,12 @@ void MyGLWidget::initializeGL(){
     glFunc->glBindVertexArray(meshVAO);
     glFunc->glGenBuffers(1, &meshVBO);
     glFunc->glBindBuffer(GL_ARRAY_BUFFER, meshVBO);
-    if (DataType::PointType == dataType){
-        glFunc->glPointSize(1.0f);
-        glFunc->glEnableVertexAttribArray(0);
-        glFunc->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    }else{
-        glFunc->glEnableVertexAttribArray(0);
-        glFunc->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-        glFunc->glEnableVertexAttribArray(1);
-        glFunc->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    }
-    auto renderFunc = [=]() {
-        while (true) {
-            Sleep(10);
-            paintGL();
-        }
-    };
-    std::thread renderThread(renderFunc);
-    renderThread.detach();
+
+    glFunc->glEnableVertexAttribArray(0);
+    glFunc->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glFunc->glEnableVertexAttribArray(1);
+    glFunc->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
 }
 // PaintGL
 void MyGLWidget::paintGL(){
@@ -82,12 +71,10 @@ void MyGLWidget::paintGL(){
     glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glFunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glFunc->glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
-    mShader->setUniformMat4("model", model);
-    mShader->setUniformMat4("view", camera->getViewMatrix());
-    mShader->setUniformMat4("proj", proj);
-    DataType::PointType == dataType ? glFunc->glDrawArrays(GL_POINTS, 0, vertices.size() / 3):
-        glFunc->glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 6);
-    update();
+    meshShader->setUniformMat4("model", model);
+    meshShader->setUniformMat4("view", camera->getViewMatrix());
+    meshShader->setUniformMat4("proj", proj);
+    glFunc->glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 6);
 }
 void MyGLWidget::resizeGL(int width, int height){
     glFunc->glViewport(0, 0, width, height);
@@ -116,6 +103,7 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
         modelSave.translate((float)subPoint.x() / 200, (float)subPoint.y() / 200);
         modelSave = modelSave * modelUse;
     }
+    update();
 }
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
     if (isShiftPressed) {
@@ -150,6 +138,7 @@ void MyGLWidget::mouseReleaseEvent(QMouseEvent* event) {
 void MyGLWidget::wheelEvent(QWheelEvent* event) {
     QPoint offset = event->angleDelta();
     camera->mouseScroll(offset.y() / 20);
+    update();
 }
 void MyGLWidget::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Shift){
