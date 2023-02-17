@@ -79,9 +79,6 @@ void MyGLWidget::paintGL(){
     meshShader->setUniformMat4("proj", proj);
 
     glFunc->glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 6);
-
-
-
 }
 void MyGLWidget::resizeGL(int width, int height){
     glFunc->glViewport(0, 0, width, height);
