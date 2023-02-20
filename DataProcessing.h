@@ -19,8 +19,8 @@ public:
 	void LoadPointData(const char* path);
 	void loadMeshData(char* filename);
 
-	void GetMeshData(pcl::PolygonMesh mesh);
-	void GetNormalVector(std::string pcdPath);
+	void getMeshData(pcl::PolygonMesh mesh);
+	void getNormalVector(std::string pcdPath);
 
 	void WritePlyData(pcl::PolygonMesh mesh);
 	void Ply2Pcd(std::string ply, std::string pcd);

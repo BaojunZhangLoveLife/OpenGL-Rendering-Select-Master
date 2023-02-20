@@ -333,7 +333,7 @@ void DataProcessing::loadMeshData(char* filename){
 	}
 }
 // Get Data From Mesh
-void DataProcessing::GetMeshData(pcl::PolygonMesh mesh){
+void DataProcessing::getMeshData(pcl::PolygonMesh mesh){
 	if (mesh.cloud.data.empty()) PCL_ERROR("[pcl::io::savePLYFile] Input point cloud has no data!\n");
 	// number of points
 	int nr_points = mesh.cloud.width * mesh.cloud.height;
@@ -372,7 +372,7 @@ void DataProcessing::GetMeshData(pcl::PolygonMesh mesh){
 }
 
 // get normal vector of point cloud
-void DataProcessing::GetNormalVector(std::string pcdPath){
+void DataProcessing::getNormalVector(std::string pcdPath){
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcdPath, *cloud) == -1)  PCL_ERROR("Could not read file\n");
 	
