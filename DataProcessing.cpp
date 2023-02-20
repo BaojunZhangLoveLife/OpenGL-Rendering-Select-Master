@@ -54,8 +54,8 @@ void DataProcessing::GetCenterPoint(QVector3D& vec){
 		(maxCoordinate.z() + minCoordinate.z()) / 2
 	};
 }
-// Centralize the original point cloud data
-void DataProcessing::Centralize(std::vector<QVector3D> data){
+// Normalize the original point cloud data
+void DataProcessing::Normalize(std::vector<QVector3D> data){
 	pointData = data;
 	GetXYZMaxMin();
 
@@ -136,7 +136,6 @@ void DataProcessing::MeshConvert(std::string filename) {
 	pcl::fromPCLPointCloud2(mesh.cloud, *cloud111);
 
 	 //计算法向量
-
 	std::vector<pcl::Indices> k_indices;
 	std::vector<std::vector<float>> k_sqr_distances;
 
@@ -280,9 +279,8 @@ void DataProcessing::LoadMeshData(char* filename){
 		}
 
 		// read vertices
-		pointData.clear();
-		int index = 0;
-		for (int iterator = 0; iterator < surfaceTotalConnectedPoints; iterator++){
+		for (int iterator = 0,index = 0; iterator < surfaceTotalConnectedPoints; iterator++){
+			if (iterator == 0)  pointData.clear();
 			fgets(buffer, MESH_BUFFER_SIZE, file);
 
 			sscanf(buffer, "%f %f %f %f %f %f",
@@ -293,7 +291,7 @@ void DataProcessing::LoadMeshData(char* filename){
 			pointData.emplace_back(data);
 			index += 3;
 		}
-		Centralize(pointData);
+		Normalize(pointData);
 		for (int i = 0; i < pointData.size(); i++){
 			surfaceModelData.vecPoints.emplace_back(pointData[i].x());
 			surfaceModelData.vecPoints.emplace_back(pointData[i].y());
@@ -338,8 +336,7 @@ void DataProcessing::LoadMeshData(char* filename){
 }
 // Get Data From Mesh
 void DataProcessing::GetMeshData(pcl::PolygonMesh mesh){
-	if (mesh.cloud.data.empty())
-		PCL_ERROR("[pcl::io::savePLYFile] Input point cloud has no data!\n");
+	if (mesh.cloud.data.empty()) PCL_ERROR("[pcl::io::savePLYFile] Input point cloud has no data!\n");
 	// number of points
 	int nr_points = mesh.cloud.width * mesh.cloud.height;
 	// size of points
@@ -365,7 +362,7 @@ void DataProcessing::GetMeshData(pcl::PolygonMesh mesh){
 		meshVertex3D[i] = { meshVertex1D[index], meshVertex1D[index+1], meshVertex1D[index+2] };
 		index += 3;
 	}
-	Centralize(meshVertex3D);
+	Normalize(meshVertex3D);
 	meshData.clear();
 	for (std::size_t i = 0; i < nr_faces; i++){
 		for (std::size_t j = 0; j < mesh.polygons[i].vertices.size(); j++){
@@ -379,9 +376,8 @@ void DataProcessing::GetMeshData(pcl::PolygonMesh mesh){
 // get normal vector of point cloud
 void DataProcessing::GetNormalVector(std::string pcdPath){
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-	if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcdPath, *cloud) == -1) {
-		PCL_ERROR("Could not read file\n");
-	}
+	if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcdPath, *cloud) == -1)  PCL_ERROR("Could not read file\n");
+	
 	std::vector<pcl::Indices> k_indices;
 	std::vector<std::vector<float>> k_sqr_distances;
 

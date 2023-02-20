@@ -14,7 +14,7 @@ public:
 	DataProcessing();
 	~DataProcessing();
 	std::string GetAppPath();
-	void Centralize(std::vector<QVector3D> data);
+	void Normalize(std::vector<QVector3D> data);
 
 	void LoadPointData(const char* path);
 	void LoadMeshData(char* filename);
