@@ -23,13 +23,9 @@ void MyGLWidget::setImageData(std::vector<GLfloat> data){
 }
 void MyGLWidget::initializeShader() {
     QString qAppDir = QCoreApplication::applicationDirPath();
-
-    QString pointVert = qAppDir + "/Shader/point.vert";
-    QString pointFrag = qAppDir + "/Shader/point.frag";
+    QString pointVert = qAppDir + "/Shader/point.vert", pointFrag = qAppDir + "/Shader/point.frag";
+    QString meshVert = qAppDir + "/Shader/mesh.vert", meshFrag = qAppDir + "/Shader/mesh.frag";
     selectShader = new ShaderProgram(pointVert.toStdString().c_str(), pointFrag.toStdString().c_str());
-
-    QString meshVert = qAppDir + "/Shader/mesh.vert";
-    QString meshFrag = qAppDir + "/Shader/mesh.frag";
     meshShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
 }
 // initialize OpenGL
@@ -37,7 +33,7 @@ void MyGLWidget::initializeGL(){
     initializeShader();
     glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
 }
-// PaintGL
+// paintGL
 void MyGLWidget::paintGL(){
     if (vertices.size() == 0)   return;
     glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -56,6 +52,7 @@ void MyGLWidget::paintGL(){
     
     meshShader->use();
     meshShader->setUniformVec3("viewPos", QVector3D(0.0f, 0.0f, 3.0f));
+
     meshShader->setUniformVec3("material.ambient", QVector3D(0.5f, 0.5f, 0.5f));
     meshShader->setUniformVec3("material.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
     meshShader->setUniformVec3("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
@@ -97,9 +94,11 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
         modelSave = modelSave * modelUse;
     }
     if (event->buttons() & Qt::RightButton) {
+        model.setToIdentity();
         model.translate((float)subPoint.x() / 200, (float)subPoint.y() / 200);
         model = model * modelUse;
 
+        modelSave.setToIdentity();
         modelSave.translate((float)subPoint.x() / 200, (float)subPoint.y() / 200);
         modelSave = modelSave * modelUse;
     }
@@ -152,13 +151,13 @@ void MyGLWidget::keyReleaseEvent(QKeyEvent* event) {
 }
 
 // Set the position where the mouse is pressed
-void MyGLWidget::setPressPosition(QPoint p_ab) {
-    translatePoint(p_ab);
-    pressPosition = p_ab;
+void MyGLWidget::setPressPosition(QPoint pressPos) {
+    translatePoint(pressPos);
+    pressPosition = pressPos;
 }
 // Move the origin to the center of the screen.
-void MyGLWidget::translatePoint(QPoint& p_ab) {
-    int x = p_ab.x() - this->width() / 2;
-    int y = -(p_ab.y() - this->height() / 2);
-    p_ab = {x,y};
+void MyGLWidget::translatePoint(QPoint& oriPos) {
+    int x = oriPos.x() - this->width() / 2;
+    int y = -(oriPos.y() - this->height() / 2);
+    oriPos = {x,y};
 }
