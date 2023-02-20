@@ -38,9 +38,6 @@ void MainWindow::startRendering(){
     pointData3D.resize(meshDataProc->pointData.size());
     pointData3D = meshDataProc->pointData;
 
-    QElapsedTimer mstimer;
-    mstimer.start();
-
     auto collectDataFunc = [=]() {
         int pointLine = 0;
         while (pointLine < pointData3D.size()){
@@ -52,8 +49,8 @@ void MainWindow::startRendering(){
                     std::string resultPath = "C:/Project/OpenGL-Rendering-Master-Build/result.ply";
                     std::string savePlyFilePath = "C:/Project/OpenGL-Rendering-Master-Build/savePLYFile.ply";
 
-                    meshDataProc->MeshConvert(resultPath);
-                    meshDataProc->LoadMeshData(savePlyFilePath.data());
+                    meshDataProc->meshConvert(resultPath);
+                    meshDataProc->loadMeshData(savePlyFilePath.data());
 
                     for (int i = 0, meshLineMarker = 0; i < meshDataProc->surfaceModelData.vecFaceTriangles.size() / 3; i++) {
                         if (i == 0) meshData.clear();
@@ -70,10 +67,6 @@ void MainWindow::startRendering(){
                     myMeshGLWidget->setImageData(meshData);
                     emit signal_glUpdate();
                 }
-            }
-            if (pointLine >= pointData3D.size()){
-                float time = (double)mstimer.nsecsElapsed() / (double)1000000;
-                qDebug() << "time= " << time/1000 << "s";
             }
         }
     };

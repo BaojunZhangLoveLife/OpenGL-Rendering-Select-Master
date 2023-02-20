@@ -117,7 +117,7 @@ void DataProcessing::Stl2Ply(std::string stl, std::string ply){
 	plyWriter->Update();
 	plyWriter->Write();
 }
-void DataProcessing::MeshConvert(std::string filename) {
+void DataProcessing::meshConvert(std::string filename) {
 	vtkSmartPointer<vtkPLYReader> plyReader = vtkSmartPointer<vtkPLYReader>::New();
 	plyReader->SetFileName(filename.c_str());
 	plyReader->Update();
@@ -242,7 +242,7 @@ void DataProcessing::WritePlyData(pcl::PolygonMesh mesh){
 	}
 }
 //Mesh
-void DataProcessing::LoadMeshData(char* filename){
+void DataProcessing::loadMeshData(char* filename){
 	FILE* file = fopen(filename, "r");
 	if (file){
 		fseek(file, 0, SEEK_END);

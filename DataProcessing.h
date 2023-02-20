@@ -17,7 +17,7 @@ public:
 	void Normalize(std::vector<QVector3D> data);
 
 	void LoadPointData(const char* path);
-	void LoadMeshData(char* filename);
+	void loadMeshData(char* filename);
 
 	void GetMeshData(pcl::PolygonMesh mesh);
 	void GetNormalVector(std::string pcdPath);
@@ -27,7 +27,7 @@ public:
 	void Stl2Ply(std::string stl, std::string ply);
 	void Ply2Stl(std::string ply, std::string stl);
 	void Ply2Ply(std::string src, std::string dst);
-	void MeshConvert(std::string filename);
+	void meshConvert(std::string filename);
 	std::vector<QVector3D>		pointData;
 	std::vector<float>			meshData;
 	SurfaceModelData			surfaceModelData;
