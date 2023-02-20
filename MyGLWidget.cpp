@@ -150,12 +150,10 @@ void MyGLWidget::keyReleaseEvent(QKeyEvent* event) {
     }
 }
 
-// Set the position where the mouse is pressed
 void MyGLWidget::setPressPosition(QPoint pressPos) {
     translatePoint(pressPos);
     pressPosition = pressPos;
 }
-// Move the origin to the center of the screen.
 void MyGLWidget::translatePoint(QPoint& oriPos) {
     int x = oriPos.x() - this->width() / 2;
     int y = -(oriPos.y() - this->height() / 2);
