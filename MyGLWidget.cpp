@@ -31,6 +31,7 @@ void MyGLWidget::initializeShader() {
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
     initializeShader();
+    glFunc->glEnable();
     glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
 }
 // paintGL
@@ -107,22 +108,48 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
     if (isShiftPressed) {
         if (event->buttons() & Qt::LeftButton) {
-            double objX, objY, objZ;
             GLint viewport[4];
+            glGetIntegerv(GL_VIEWPORT, viewport);
+            const int BUFSIZE = 512;
+            GLuint selectBuf[BUFSIZE];
+            glSelectBuffer(BUFSIZE, selectBuf);
+            glRenderMode(GL_SELECT);
+            glInitNames();
+            glPushName(0);
+            glMatrixMode(GL_PROJECTION);
+            glPushMatrix();
+            glLoadIdentity();
+            gluPickMatrix(event->x(), viewport[3] - event->y(), 5.0, 5.0, viewport);
+            glMultMatrixf(proj.constData());
+
+  
+
+            double objX, objY, objZ;
+   
             double modelViewMatrix[16];
             double projectionMatrix[16];
-
-            glFunc->glGetIntegerv(GL_VIEWPORT, viewport);
-            glFunc->glGetDoublev(GL_MODELVIEW_MATRIX, modelViewMatrix);
-            glFunc->glGetDoublev(GL_PROJECTION_MATRIX, projectionMatrix);
-
+            QMatrix4x4 mVMatrix = (camera->getViewMatrix()) * model;
             double winX = event->x();
             double winY = height() - event->y();
-            double winZ = 0.1;
+            double winZ = 1;
 
-            gluUnProject(winX, winY, winZ, (double*)modelViewMatrix, (double*)projectionMatrix, viewport, &objX, &objY, &objZ);
 
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            glLoadIdentity();
+            glMultMatrixf(mVMatrix.constData());
+
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    projectionMatrix[i * 4 + j] = proj(i, j);
+                    modelViewMatrix[i * 4 + j] = mVMatrix(i, j);
+                }
+            }
+            gluUnProject(winX, winY, winZ, modelViewMatrix, projectionMatrix, viewport, &objX, &objY, &objZ);
+            std::cout << "objX = " << objX << "\t" << "objY = " << objY << "\t" << "objZ = " << objZ << std::endl
+                << "----------------------------------------------------" << std::endl;
             gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
+      
         }
     }else{
         setPressPosition(event->pos());

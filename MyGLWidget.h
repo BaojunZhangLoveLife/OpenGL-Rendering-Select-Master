@@ -34,7 +34,7 @@ protected:
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
     void setPressPosition(QPoint p_ab);
-    void translate_point(QPoint& p_ab);
+    void translatePoint(QPoint& p_ab);
 
 private:
     ShaderProgram* meshShader;
