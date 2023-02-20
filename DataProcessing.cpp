@@ -31,8 +31,6 @@ std::string DataProcessing::GetAppPath(){
 	QString qAppDir = QCoreApplication::applicationDirPath();
 	std::string::size_type iPos = (qAppDir.toStdString().find_last_of('\\') + 1) == 0 ?
 		qAppDir.toStdString().find_last_of('/') + 1 : qAppDir.toStdString().find_last_of('\\') + 1;
-	//string ImgNameTag = ImgName.substr(ImgName.rfind("."), ImgName.length());
-	//std::string ImgName = qAppDir.toStdString().substr(iPos, qAppDir.toStdString().length() - iPos);
 	return qAppDir.toStdString().substr(0, iPos);
 }
 void DataProcessing::LoadPointData(const char* path){
