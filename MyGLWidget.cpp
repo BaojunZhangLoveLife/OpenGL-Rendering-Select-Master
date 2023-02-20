@@ -8,7 +8,6 @@ MyGLWidget::MyGLWidget(QWidget* parent,int DT){
     camera = new Camera();
     proj.setToIdentity();
     proj.perspective(45.0f, width() / height(), 0.1f, 200.f);
-    //qDebug() << "MyGLWidget.proj = " << proj;
     this->grabKeyboard();
 }
 
@@ -83,17 +82,17 @@ void MyGLWidget::resizeGL(int width, int height){
 }
 
 void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
-    QPoint p_ab = event->pos();
-    translate_point(p_ab);
-    QPoint subPoint = p_ab - pressPosition;
+    QPoint posMouse = event->pos();
+    translatePoint(posMouse);
+    QPoint subPoint = posMouse - pressPosition;
 
-    model.setToIdentity();
-    modelSave.setToIdentity();
     if (event->buttons() & Qt::LeftButton) {
+        model.setToIdentity();
         GLfloat angleNow = qSqrt(qPow(subPoint.x(), 2) + qPow(subPoint.y(), 2)) / 5;
         model.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
         model = model * modelUse;
 
+        modelSave.setToIdentity();
         modelSave.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
         modelSave = modelSave * modelUse;
     }
@@ -154,11 +153,11 @@ void MyGLWidget::keyReleaseEvent(QKeyEvent* event) {
 
 // Set the position where the mouse is pressed
 void MyGLWidget::setPressPosition(QPoint p_ab) {
-    translate_point(p_ab);
+    translatePoint(p_ab);
     pressPosition = p_ab;
 }
 // Move the origin to the center of the screen.
-void MyGLWidget::translate_point(QPoint& p_ab) {
+void MyGLWidget::translatePoint(QPoint& p_ab) {
     int x = p_ab.x() - this->width() / 2;
     int y = -(p_ab.y() - this->height() / 2);
     p_ab = {x,y};
