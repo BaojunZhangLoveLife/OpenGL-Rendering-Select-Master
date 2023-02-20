@@ -8,6 +8,7 @@ MyGLWidget::MyGLWidget(QWidget* parent,int DT){
     camera = new Camera();
     proj.setToIdentity();
     proj.perspective(45.0f, width() / height(), 0.1f, 200.f);
+    //qDebug() << "MyGLWidget.proj = " << proj;
     this->grabKeyboard();
 }
 
@@ -31,14 +32,11 @@ void MyGLWidget::initializeShader() {
     QString meshVert = qAppDir + "/Shader/mesh.vert";
     QString meshFrag = qAppDir + "/Shader/mesh.frag";
     meshShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
-
 }
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
     initializeShader();
     glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
-
-
 }
 // PaintGL
 void MyGLWidget::paintGL(){
@@ -82,6 +80,7 @@ void MyGLWidget::paintGL(){
 }
 void MyGLWidget::resizeGL(int width, int height){
     glFunc->glViewport(0, 0, width, height);
+   // qDebug() << "mousePressEvent = " << width << " " << height;
 }
 
 void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
@@ -114,18 +113,36 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         if (event->buttons() & Qt::LeftButton) {
             double objX, objY, objZ;
             GLint viewport[4];
-            double modelViewMatrix[16];
-            double projectionMatrix[16];
+            float* modelViewMatrix;
+            float* projectionMatrix;
 
-            glFunc->glGetIntegerv(GL_VIEWPORT, viewport);
-            glFunc->glGetDoublev(GL_MODELVIEW_MATRIX, modelViewMatrix);
-            glFunc->glGetDoublev(GL_PROJECTION_MATRIX, projectionMatrix);
+            //glFunc->glGetIntegerv(GL_VIEWPORT, viewport);
+            //glFunc->glGetDoublev(GL_MODELVIEW_MATRIX, modelViewMatrix);
+ 
+            //glFunc->glGetDoublev(GL_PROJECTION_MATRIX, projectionMatrix);
 
+       
+            proj.copyDataTo(projectionMatrix);
+            (camera->getViewMatrix())* model;
+            //QMatrix4x4 aaa = (camera->getViewMatrix()) * model;
+            //aaa.copyDataTo(modelViewMatrix);
+
+           ////memcpy(projectionMatrix, projData, 16 * sizeof(float));
+           // qDebug() << "proj = " << proj;
+           // qDebug() << "projectionMatrix = ";
+           // for (int i = 0; i < 16; i++){
+           //     std::cout << projectionMatrix[i] << " ";
+           // }
+      
             double winX = event->x();
             double winY = height() - event->y();
             double winZ = 0.1;
 
-            gluUnProject(winX, winY, winZ, modelViewMatrix, projectionMatrix, viewport, &objX, &objY, &objZ);
+            //luUnProject(winX, winY, winZ, (double*)modelViewMatrix, (double*)projectionMatrix, viewport, &objX, &objY, &objZ);
+
+            std::cout << "objX = " << objX << std::endl;
+            std::cout << "objY = " << objY << std::endl;
+            std::cout << "objZ = " << objZ << std::endl;
 
             gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
         }

@@ -33,7 +33,7 @@ void MainWindow::gLWidgetUpdate() {
 }
 // Begin render
 void MainWindow::startRendering(){
-    QString fileName = "C:/Project/OpenGL-Rendering-Select-Master/data/heart.txt";
+    QString fileName = "C:/Project/OpenGL-Rendering-Select-Master/Data/originalData.txt";
     meshDataProc->LoadPointData(fileName.toStdString().c_str());
     pointData3D.resize(meshDataProc->pointData.size());
     pointData3D = meshDataProc->pointData;
