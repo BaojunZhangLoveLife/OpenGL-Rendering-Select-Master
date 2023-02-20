@@ -1,14 +1,12 @@
 #version 330 core
-struct Material
-{
+struct Material{
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;    
     float shininess;
 }; 
 
-struct Light
-{
+struct Light{
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -27,8 +25,7 @@ uniform Light light2;
 
 vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir);
 
-void main()
-{
+void main(){
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 result = CalcDirLight(light1, norm, viewDir);
@@ -36,8 +33,7 @@ void main()
     FragColor = vec4(result, 1.0);
 } 
 
-vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir)
-{
+vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir){
     vec3 lightDir = normalize(-light.direction);
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 reflectDir = reflect(-lightDir, normal);
