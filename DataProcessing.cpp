@@ -388,7 +388,8 @@ void DataProcessing::getNormalVector(std::string pcdPath){
 	for (size_t i = 0; i < cloud->size(); ++i){
 		pcl::Normal normal;
 		ne.computePointNormal(*cloud, k_indices[i], normal.normal_x, normal.normal_y, normal.normal_z, normal.curvature);
-		pcl::flipNormalTowardsViewpoint((*cloud)[i], (*cloud).sensor_origin_[0], (*cloud).sensor_origin_[1], (*cloud).sensor_origin_[2], normal.normal_x, normal.normal_y, normal.normal_z);
+		pcl::flipNormalTowardsViewpoint((*cloud)[i], (*cloud).sensor_origin_[0], 
+			(*cloud).sensor_origin_[1], (*cloud).sensor_origin_[2], normal.normal_x, normal.normal_y, normal.normal_z);
 		normals->emplace_back(normal);
 	}
 	pcl::NormalRefinement<pcl::Normal> nr(k_indices, k_sqr_distances);

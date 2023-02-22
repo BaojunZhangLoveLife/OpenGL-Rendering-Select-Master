@@ -31,16 +31,21 @@ void MyGLWidget::initializeShader() {
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
     initializeShader();
-    glFunc->glEnable();
+
     glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
+    glFunc->glEnable(GL_DEPTH_TEST);
+    glFunc->glEnable(GL_SELECT);
 }
 // paintGL
 void MyGLWidget::paintGL(){
     if (vertices.size() == 0)   return;
+    GLuint meshVAO, meshVBO;
+    GLuint selectVAO, selectVBO;
+
+
     glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glFunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glFunc->glEnable(GL_DEPTH_TEST);
     glFunc->glGenVertexArrays(1, &meshVAO);
     glFunc->glGenBuffers(1, &meshVBO);
     glFunc->glBindVertexArray(meshVAO);
@@ -116,6 +121,7 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             glRenderMode(GL_SELECT);
             glInitNames();
             glPushName(0);
+
             glMatrixMode(GL_PROJECTION);
             glPushMatrix();
             glLoadIdentity();
