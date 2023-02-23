@@ -48,12 +48,12 @@ private:
     QOpenGLFunctions_4_5_Core* glFunc;
     std::vector<GLfloat> vertices;
     int dataType;
-    QPoint curPoint;
-    QPoint orgPoint;
     QPoint pressPosition; 
     GLuint meshVAO, meshVBO;
     GLuint selectVAO, selectVBO;
     bool isShiftPressed = false;
+    static const int selectBufferSize = 100;
+    std::vector<uint> selectBuffer = std::vector<uint>(selectBufferSize);
 };
 
 #endif 

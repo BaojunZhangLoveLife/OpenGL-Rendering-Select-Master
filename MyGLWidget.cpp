@@ -1,14 +1,13 @@
 #include "MyGLWidget.h"
 #include <QCoreApplication>
 #include <iostream>
-#include <mutex>
-
 MyGLWidget::MyGLWidget(QWidget* parent,int DT){
     dataType = DT;
     camera = new Camera();
     proj.setToIdentity();
     proj.perspective(45.0f, width() / height(), 0.1f, 200.f);
     this->grabKeyboard();
+
 }
 
 MyGLWidget::~MyGLWidget(){
@@ -31,8 +30,8 @@ void MyGLWidget::initializeShader() {
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
     initializeShader();
-
-    glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
+    glFunc = QOpenGLContext::currentContext()
+        ->versionFunctions<QOpenGLFunctions_4_5_Core>();
     glFunc->glEnable(GL_DEPTH_TEST);
     glFunc->glEnable(GL_SELECT);
 }
@@ -41,7 +40,19 @@ void MyGLWidget::paintGL(){
     if (vertices.size() == 0)   return;
     GLuint meshVAO, meshVBO;
     GLuint selectVAO, selectVBO;
+    int renderMode;
+    glGetIntegerv(GL_RENDER_MODE, &renderMode);
 
+    if (renderMode != GL_SELECT) {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        const float aspect = static_cast<float>(width()) / height();
+        gluPerspective(45.0, aspect, 1.0, 1000.0);
+    }
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
     glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glFunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -111,34 +122,49 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
     update();
 }
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
-    if (isShiftPressed) {
-        if (event->buttons() & Qt::LeftButton) {
-            GLint viewport[4];
-            glGetIntegerv(GL_VIEWPORT, viewport);
-            const int BUFSIZE = 512;
-            GLuint selectBuf[BUFSIZE];
-            glSelectBuffer(BUFSIZE, selectBuf);
-            glRenderMode(GL_SELECT);
-            glInitNames();
-            glPushName(0);
+    if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
+        std::fill(selectBuffer.begin(), selectBuffer.end(), 0);
+        glSelectBuffer(selectBufferSize, &selectBuffer[0]);
+        // Draw for selection buffer
+        glRenderMode(GL_SELECT);
 
-            glMatrixMode(GL_PROJECTION);
-            glPushMatrix();
-            glLoadIdentity();
-            gluPickMatrix(event->x(), viewport[3] - event->y(), 5.0, 5.0, viewport);
-            glMultMatrixf(proj.constData());
+        // Matrix setting
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
 
-  
+        glInitNames();
+        glPushName(0);
+        glLoadName(8);
 
-            double objX, objY, objZ;
-   
+        int viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
+        const float aspect = static_cast<float>(viewport[2]) / viewport[3];
+        gluPerspective(45.0, aspect, 1.0, 1000.0);
+
+        paintGL();
+
+        int hits = glRenderMode(GL_RENDER);
+        printf("%d hits\n", hits);
+        if (hits > 0) {
+            int id = 0;
+            for (int i = 0; i < hits; i++) {
+                printf("Level: %u\n", selectBuffer[id + 0]);
+                printf("Min: %f\n", (double)selectBuffer[id + 1] / UINT_MAX);
+                printf("Max: %f\n", (double)selectBuffer[id + 2] / UINT_MAX);
+                printf("ID: %u\n", selectBuffer[id + 3]);
+                id += 4;
+            }
+        }
+
+            /*double objX, objY, objZ;
             double modelViewMatrix[16];
             double projectionMatrix[16];
             QMatrix4x4 mVMatrix = (camera->getViewMatrix()) * model;
             double winX = event->x();
             double winY = height() - event->y();
             double winZ = 1;
-
 
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
@@ -154,9 +180,8 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             gluUnProject(winX, winY, winZ, modelViewMatrix, projectionMatrix, viewport, &objX, &objY, &objZ);
             std::cout << "objX = " << objX << "\t" << "objY = " << objY << "\t" << "objZ = " << objZ << std::endl
                 << "----------------------------------------------------" << std::endl;
-            gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
+            gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);*/
       
-        }
     }else{
         setPressPosition(event->pos());
         modelUse = modelSave;
@@ -190,5 +215,6 @@ void MyGLWidget::setPressPosition(QPoint pressPos) {
 void MyGLWidget::translatePoint(QPoint& oriPos) {
     int x = oriPos.x() - this->width() / 2;
     int y = -(oriPos.y() - this->height() / 2);
-    oriPos = {x,y};
+    oriPos.setX(x);
+    oriPos.setY(y);
 }
