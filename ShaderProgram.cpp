@@ -6,13 +6,9 @@
 #include <iostream>
 
 ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath){
-
-	std::string vertexCode;
-	std::string fragmentCode;
-	std::ifstream vShaderFile;
-	std::ifstream fShaderFile;
-	std::stringstream vShaderStream;
-	std::stringstream fShaderStream;
+	std::string vertexCode, fragmentCode;
+	std::ifstream vShaderFile, fShaderFile;
+	std::stringstream vShaderStream, fShaderStream;
 
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -44,6 +40,7 @@ ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath){
 	ID = new QOpenGLShaderProgram();
 	ID->addShader(&verShader);
 	ID->addShader(&fraShader);
+	
 	ID->link();
 }
 void ShaderProgram::use(){
