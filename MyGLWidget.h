@@ -9,6 +9,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLFunctions_4_5_Core>
+#include <QOpenGLFunctions>
 #include <gl/GLU.h>
 
 enum DataType{
@@ -46,6 +47,8 @@ private:
     QMatrix4x4 proj;
 
     QOpenGLFunctions_4_5_Core* glFunc;
+
+    QOpenGLExtraFunctions* gl;
     std::vector<GLfloat> vertices;
     int dataType;
     QPoint pressPosition; 

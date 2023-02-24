@@ -4,7 +4,6 @@
 MyGLWidget::MyGLWidget(QWidget* parent,int DT){
     dataType = DT;
     camera = new Camera();
-    
     proj.setToIdentity();
     proj.perspective(45.0f, width() / height(), 0.1f, 200.f);
     this->grabKeyboard();
@@ -31,29 +30,15 @@ void MyGLWidget::initializeShader() {
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
     initializeShader();
+    gl = QOpenGLContext::currentContext()->extraFunctions();
     glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
     glFunc->glEnable(GL_DEPTH_TEST);
     glFunc->glEnable(GL_SELECT);
 }
 // paintGL
 void MyGLWidget::paintGL(){
-    if (vertices.size() == 0)   return;
     GLuint meshVAO, meshVBO;
     GLuint selectVAO, selectVBO;
-    int renderMode;
-    glGetIntegerv(GL_RENDER_MODE, &renderMode);
-
-    if (renderMode != GL_SELECT) {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        const float aspect = static_cast<float>(width()) / height();
-        gluPerspective(45.0, aspect, 1.0, 1000.0);
-    }
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-
     glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glFunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -86,11 +71,12 @@ void MyGLWidget::paintGL(){
     meshShader->setUniformVec3("light2.direction", QVector3D(1.0f, 1.0f, -3.0f));
    
     meshShader->setUniformMat4("model", model);
+
     meshShader->setUniformMat4("view", camera->getViewMatrix());
     meshShader->setUniformMat4("proj", proj);
     glInitNames();
     glPushName(0);
-    glLoadName(8);
+    glLoadName(1);
     glFunc->glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 6);
 }
 void MyGLWidget::resizeGL(int width, int height){
@@ -107,7 +93,7 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
         GLfloat angleNow = qSqrt(qPow(subPoint.x(), 2) + qPow(subPoint.y(), 2)) / 5;
         model.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
         model = model * modelUse;
-
+        ;
         modelSave.setToIdentity();
         modelSave.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
         modelSave = modelSave * modelUse;
@@ -125,24 +111,18 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
 }
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
     if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
-        std::fill(selectBuffer.begin(), selectBuffer.end(), 0);
-        glSelectBuffer(selectBufferSize, &selectBuffer[0]);
-        // Draw for selection buffer
-        glRenderMode(GL_SELECT);
+        //std::fill(selectBuffer.begin(), selectBuffer.end(), 0);
+        //glSelectBuffer(selectBufferSize, &selectBuffer[0]);
+        //// Draw for selection buffer
+        //glRenderMode(GL_SELECT);
 
-        // Matrix setting
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
+        //int viewport[4];
+        //glGetIntegerv(GL_VIEWPORT, viewport);
+        //gluPickMatrix(event->x(), height() - event->y(), 1, 1, viewport);
+        ////proj.setToIdentity();
+        ////proj.perspective(45.0f, width() / height(), 0.1f, 200.f);
+        //paintGL();
 
-        int viewport[4];
-        glGetIntegerv(GL_VIEWPORT, viewport);
-        gluPickMatrix(event->x(), height() - event->y(), 1, 1, viewport);
-        const float aspect = static_cast<float>(viewport[2]) / viewport[3];
-        gluPerspective(45.0, aspect, 1.0, 1000.0);
-
-        paintGL();
-        glRenderMode(GL_RENDER);
         //int hits = glRenderMode(GL_RENDER);
         //printf("%d hits\n", hits);
         //if (hits > 0) {
@@ -156,29 +136,57 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         //    }
         //}
 
-            double p1[3], p2[3];
-            double modelViewMatrix[16];
-            double projectionMatrix[16];
-            QMatrix4x4 mVMatrix = (camera->getViewMatrix()) * model;
-            double pickingX = event->x();
-            double pickingY = height() - event->y();
+    
+            // 获取鼠标位置
 
-            //glMatrixMode(GL_MODELVIEW);
-            //glPushMatrix();
-            //glLoadIdentity();
-            //glMultMatrixf(mVMatrix.constData());
 
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    modelViewMatrix[i * 4 + j] = mVMatrix(i, j);
-                    projectionMatrix[i * 4 + j] = proj(i, j);
-                }
+            // 渲染到帧缓冲区中
+            gl->glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+           
+            glViewport(0, 0, width(), height());
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            QPoint pos = event->pos();
+            // 读取深度缓冲区中的深度值
+            GLfloat depth;
+            glReadPixels(pos.x(), height() - pos.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+
+            // 在渲染到屏幕之前，需要将帧缓冲区绑定到默认的帧缓冲区上
+            gl->glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+
+            // 检查选定的对象并执行相应的操作
+            if (depth < 1.0) {
+                // 选定了一个网格对象
+                std::cout << "可以" << std::endl;
             }
-            gluUnProject(pickingX, pickingY, 0, modelViewMatrix, projectionMatrix, viewport, &p1[0], &p1[1], &p1[2]);
-            std::cout << "p1[0] = " << p1[0] << "\t" << "p1[1] = " << p1[1] << "\t" << "p1[2] = " << p1[2] << std::endl
-                << "----------------------------------------------------" << std::endl;
-            //gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
-      
+            else {
+                // 没有选中任何网格对象
+                std::cout << "不可以" << std::endl;
+            }
+
+            // 渲染到屏幕上
+            update();
+        
+
+ /*       double p1[3], p2[3];
+        double modelViewMatrix[16];
+        double projectionMatrix[16];
+        QMatrix4x4 mVMatrix = (camera->getViewMatrix()) * model;
+        double pickingX = event->x();
+        double pickingY = height() - event->y();
+
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                modelViewMatrix[i * 4 + j] = mVMatrix(i, j);
+                projectionMatrix[i * 4 + j] = proj(i, j);
+            }
+        }
+        gluUnProject(pickingX, pickingY, 0, modelViewMatrix, projectionMatrix, viewport, &p1[0], &p1[1], &p1[2]);
+        std::cout << "p1[0] = " << p1[0] << "\t" << "p1[1] = " << p1[1] << "\t" << "p1[2] = " << p1[2] << std::endl
+            << "----------------------------------------------------" << std::endl;
+        gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);*/
+
     }else{
         setPressPosition(event->pos());
         modelUse = modelSave;

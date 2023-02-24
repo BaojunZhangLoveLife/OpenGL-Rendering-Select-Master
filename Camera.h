@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QVector3D>
-
 class Camera{
 public:
 	Camera(
