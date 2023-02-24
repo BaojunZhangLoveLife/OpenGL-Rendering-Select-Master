@@ -30,8 +30,7 @@ void MyGLWidget::initializeShader() {
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
     initializeShader();
-    glFunc = QOpenGLContext::currentContext()
-        ->versionFunctions<QOpenGLFunctions_4_5_Core>();
+    glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
     glFunc->glEnable(GL_DEPTH_TEST);
     glFunc->glEnable(GL_SELECT);
 }
@@ -88,7 +87,9 @@ void MyGLWidget::paintGL(){
     meshShader->setUniformMat4("model", model);
     meshShader->setUniformMat4("view", camera->getViewMatrix());
     meshShader->setUniformMat4("proj", proj);
-
+    glInitNames();
+    glPushName(0);
+    glLoadName(8);
     glFunc->glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 6);
 }
 void MyGLWidget::resizeGL(int width, int height){
@@ -133,54 +134,49 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         glPushMatrix();
         glLoadIdentity();
 
-        glInitNames();
-        glPushName(0);
-        glLoadName(8);
-
         int viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
-        gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
+        gluPickMatrix(event->x(), height() - event->y(), 1, 1, viewport);
         const float aspect = static_cast<float>(viewport[2]) / viewport[3];
         gluPerspective(45.0, aspect, 1.0, 1000.0);
 
         paintGL();
+        glRenderMode(GL_RENDER);
+        //int hits = glRenderMode(GL_RENDER);
+        //printf("%d hits\n", hits);
+        //if (hits > 0) {
+        //    int id = 0;
+        //    for (int i = 0; i < hits; i++) {
+        //        printf("Level: %u\n", selectBuffer[id + 0]);
+        //        printf("Min: %f\n", (double)selectBuffer[id + 1] / UINT_MAX);
+        //        printf("Max: %f\n", (double)selectBuffer[id + 2] / UINT_MAX);
+        //        printf("ID: %u\n", selectBuffer[id + 3]);
+        //        id += 4;
+        //    }
+        //}
 
-        int hits = glRenderMode(GL_RENDER);
-        printf("%d hits\n", hits);
-        if (hits > 0) {
-            int id = 0;
-            for (int i = 0; i < hits; i++) {
-                printf("Level: %u\n", selectBuffer[id + 0]);
-                printf("Min: %f\n", (double)selectBuffer[id + 1] / UINT_MAX);
-                printf("Max: %f\n", (double)selectBuffer[id + 2] / UINT_MAX);
-                printf("ID: %u\n", selectBuffer[id + 3]);
-                id += 4;
-            }
-        }
-
-            /*double objX, objY, objZ;
+            double p1[3], p2[3];
             double modelViewMatrix[16];
             double projectionMatrix[16];
             QMatrix4x4 mVMatrix = (camera->getViewMatrix()) * model;
-            double winX = event->x();
-            double winY = height() - event->y();
-            double winZ = 1;
+            double pickingX = event->x();
+            double pickingY = height() - event->y();
 
-            glMatrixMode(GL_MODELVIEW);
-            glPushMatrix();
-            glLoadIdentity();
-            glMultMatrixf(mVMatrix.constData());
+            //glMatrixMode(GL_MODELVIEW);
+            //glPushMatrix();
+            //glLoadIdentity();
+            //glMultMatrixf(mVMatrix.constData());
 
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 4; j++) {
-                    projectionMatrix[i * 4 + j] = proj(i, j);
                     modelViewMatrix[i * 4 + j] = mVMatrix(i, j);
+                    projectionMatrix[i * 4 + j] = proj(i, j);
                 }
             }
-            gluUnProject(winX, winY, winZ, modelViewMatrix, projectionMatrix, viewport, &objX, &objY, &objZ);
-            std::cout << "objX = " << objX << "\t" << "objY = " << objY << "\t" << "objZ = " << objZ << std::endl
+            gluUnProject(pickingX, pickingY, 0, modelViewMatrix, projectionMatrix, viewport, &p1[0], &p1[1], &p1[2]);
+            std::cout << "p1[0] = " << p1[0] << "\t" << "p1[1] = " << p1[1] << "\t" << "p1[2] = " << p1[2] << std::endl
                 << "----------------------------------------------------" << std::endl;
-            gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);*/
+            //gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
       
     }else{
         setPressPosition(event->pos());
