@@ -35,7 +35,7 @@ void main(){
     result += CalcDirLight(light2, norm, viewDir);
 
     float dist = distance(vec3(gl_FragCoord.xy, 0), pickPosition);
-    if (dist < 10.0) {
+    if (dist < 4.0) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Mark the fragment as selected
     }else{
         FragColor = vec4(result, 1.0);  // Default color

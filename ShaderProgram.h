@@ -12,7 +12,7 @@ public:
 	void setUniformMat3(const char* name, const QMatrix3x3 trans)	const;
 	void setUniformVec4(const char* name, const QVector4D value)	const;
 	void setUniformVec3(const char* name, const QVector3D value)	const;
-	void setUniformPnt3(const char* name, const QPoint value)		const;
+	
 
 private:
 	QOpenGLShaderProgram* ID;

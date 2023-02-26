@@ -37,7 +37,6 @@ void MyGLWidget::initializeGL(){
 // paintGL
 void MyGLWidget::paintGL(){
     GLuint meshVAO, meshVBO;
-    GLuint selectVAO, selectVBO;
     glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glFunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -68,13 +67,54 @@ void MyGLWidget::paintGL(){
     meshShader->setUniformVec3("light2.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
     meshShader->setUniformVec3("light2.specular", QVector3D(0.1f, 0.1f, 0.1f));
     meshShader->setUniformVec3("light2.direction", QVector3D(1.0f, 1.0f, -3.0f));
-    //meshShader->setUniformPnt3();
 
     meshShader->setUniformMat4("model", model);
     meshShader->setUniformMat4("view", camera->getViewMatrix());
     meshShader->setUniformMat4("proj", proj);
 
     glFunc->glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 6);
+
+    if (isShiftPressed) {
+        GLuint selectVAO, selectVBO;
+        glFunc->glGenVertexArrays(1, &selectVAO);
+        glFunc->glGenBuffers(1, &selectVBO);
+        glFunc->glBindVertexArray(selectVAO);
+        glFunc->glBindBuffer(GL_ARRAY_BUFFER, selectVBO);
+        glFunc->glEnableVertexAttribArray(0);
+        glFunc->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glFunc->glEnableVertexAttribArray(1);
+        glFunc->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glFunc->glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * selectPoints.size(), selectPoints.data(), GL_DYNAMIC_DRAW);
+
+        meshShader->use();
+        meshShader->setUniformVec3("viewPos", QVector3D(0.0f, 0.0f, 3.0f));
+
+        meshShader->setUniformVec3("material.ambient", QVector3D(0.5f, 0.5f, 0.5f));
+        meshShader->setUniformVec3("material.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
+        meshShader->setUniformVec3("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
+        meshShader->setUniformFloat("material.shininess", 16.0f);
+
+        meshShader->setUniformVec3("light1.ambient", QVector3D(0.2f, 0.2f, 0.2f));
+        meshShader->setUniformVec3("light1.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
+        meshShader->setUniformVec3("light1.specular", QVector3D(0.1f, 0.1f, 0.1f));
+        meshShader->setUniformVec3("light1.direction", QVector3D(1.0f, 1.0f, 3.0f));
+
+        meshShader->setUniformVec3("light2.ambient", QVector3D(0.2f, 0.2f, 0.2f));
+        meshShader->setUniformVec3("light2.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
+        meshShader->setUniformVec3("light2.specular", QVector3D(0.1f, 0.1f, 0.1f));
+        meshShader->setUniformVec3("light2.direction", QVector3D(1.0f, 1.0f, -3.0f));
+
+        meshShader->setUniformMat4("model", model);
+        meshShader->setUniformMat4("view", camera->getViewMatrix());
+        meshShader->setUniformMat4("proj", proj);
+
+        meshShader->setUniformVec3("pickPosition", selectPoints[0]);
+
+        glFunc->glPointSize(10);
+        glFunc->glDrawArrays(GL_POINTS, 0, selectPoints.size());
+    }
+
+
 }
 void MyGLWidget::resizeGL(int width, int height){
     glFunc->glViewport(0, 0, width, height);
@@ -108,9 +148,13 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
                 projectionMatrix[i * 4 + j] = proj(i, j);
             }
         }       
-        double p1[3];
-        gluUnProject(event->x(), height() - event->y(), 0, modelViewMatrix, projectionMatrix, viewport, &p1[0], &p1[1], &p1[2]);
-        gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
+        double selectPoint[3];
+        
+        gluUnProject(event->x(), height() - event->y(), 0, modelViewMatrix, projectionMatrix, viewport, &selectPoint[0], &selectPoint[1], &selectPoint[2]);
+        QVector3D aaa(selectPoint[0], selectPoint[1], selectPoint[2]);
+        selectPoints.push_back(aaa);
+        update();
+        //gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
     }else{
         setPressPosition(event->pos());
         modelUse = modelSave;

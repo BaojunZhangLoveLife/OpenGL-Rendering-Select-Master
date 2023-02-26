@@ -47,6 +47,7 @@ private:
     QMatrix4x4 modelSave;
     Camera* camera;
     QMatrix4x4 proj;
+    std::vector<QVector3D> selectPoints;
 
     QOpenGLFunctions_4_5_Core* glFunc;
 
