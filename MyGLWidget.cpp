@@ -68,7 +68,8 @@ void MyGLWidget::paintGL(){
     meshShader->setUniformVec3("light2.diffuse", QVector3D(0.9f, 0.9f, 0.9f));
     meshShader->setUniformVec3("light2.specular", QVector3D(0.1f, 0.1f, 0.1f));
     meshShader->setUniformVec3("light2.direction", QVector3D(1.0f, 1.0f, -3.0f));
-   
+    //meshShader->setUniformPnt3();
+
     meshShader->setUniformMat4("model", model);
     meshShader->setUniformMat4("view", camera->getViewMatrix());
     meshShader->setUniformMat4("proj", proj);
@@ -108,10 +109,8 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             }
         }       
         double p1[3];
-        gluUnProject(event->x(), height() - event->y(), 0,
-            modelViewMatrix, projectionMatrix, viewport, &p1[0], &p1[1], &p1[2]);
+        gluUnProject(event->x(), height() - event->y(), 0, modelViewMatrix, projectionMatrix, viewport, &p1[0], &p1[1], &p1[2]);
         gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
-
     }else{
         setPressPosition(event->pos());
         modelUse = modelSave;

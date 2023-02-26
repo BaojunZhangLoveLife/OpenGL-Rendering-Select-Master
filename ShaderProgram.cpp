@@ -67,3 +67,6 @@ void ShaderProgram::setUniformVec4(const char* name, const QVector4D value) cons
 void ShaderProgram::setUniformVec3(const char* name, const QVector3D value) const{
 	ID->setUniformValue(name, value);
 }
+void ShaderProgram::setUniformPnt3(const char* name, const QPoint value)	const {
+	ID->setUniformValue(name, value);
+}
