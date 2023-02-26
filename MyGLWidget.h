@@ -36,6 +36,8 @@ protected:
     void keyReleaseEvent(QKeyEvent* event);
     void setPressPosition(QPoint p_ab);
     void translatePoint(QPoint& p_ab);
+    void rotateModel(QPoint point);
+    void translateModel(QPoint point);
 
 private:
     ShaderProgram* meshShader;
@@ -48,7 +50,6 @@ private:
 
     QOpenGLFunctions_4_5_Core* glFunc;
 
-    QOpenGLExtraFunctions* gl;
     std::vector<GLfloat> vertices;
     int dataType;
     QPoint pressPosition; 

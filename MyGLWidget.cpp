@@ -30,7 +30,6 @@ void MyGLWidget::initializeShader() {
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
     initializeShader();
-    gl = QOpenGLContext::currentContext()->extraFunctions();
     glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
     glFunc->glEnable(GL_DEPTH_TEST);
     glFunc->glEnable(GL_SELECT);
@@ -71,12 +70,9 @@ void MyGLWidget::paintGL(){
     meshShader->setUniformVec3("light2.direction", QVector3D(1.0f, 1.0f, -3.0f));
    
     meshShader->setUniformMat4("model", model);
-
     meshShader->setUniformMat4("view", camera->getViewMatrix());
     meshShader->setUniformMat4("proj", proj);
-    glInitNames();
-    glPushName(0);
-    glLoadName(1);
+
     glFunc->glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 6);
 }
 void MyGLWidget::resizeGL(int width, int height){
@@ -87,105 +83,34 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
     QPoint posMouse = event->pos();
     translatePoint(posMouse);
     QPoint subPoint = posMouse - pressPosition;
-
     if (event->buttons() & Qt::LeftButton) {
-        model.setToIdentity();
-        GLfloat angleNow = qSqrt(qPow(subPoint.x(), 2) + qPow(subPoint.y(), 2)) / 5;
-        model.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
-        model = model * modelUse;
-        ;
-        modelSave.setToIdentity();
-        modelSave.rotate(angleNow, -subPoint.y(), subPoint.x(), 0.0);
-        modelSave = modelSave * modelUse;
+        rotateModel(subPoint);
     }
     if (event->buttons() & Qt::RightButton) {
-        model.setToIdentity();
-        model.translate((float)subPoint.x() / 200, (float)subPoint.y() / 200);
-        model = model * modelUse;
-
-        modelSave.setToIdentity();
-        modelSave.translate((float)subPoint.x() / 200, (float)subPoint.y() / 200);
-        modelSave = modelSave * modelUse;
+        translateModel(subPoint);
     }
     update();
 }
+
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
+    // Hold the “shift” key and press the "left mouse" button to trigger the "pickup" operation, to 
     if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
-        //std::fill(selectBuffer.begin(), selectBuffer.end(), 0);
-        //glSelectBuffer(selectBufferSize, &selectBuffer[0]);
-        //// Draw for selection buffer
-        //glRenderMode(GL_SELECT);
-
-        //int viewport[4];
-        //glGetIntegerv(GL_VIEWPORT, viewport);
-        //gluPickMatrix(event->x(), height() - event->y(), 1, 1, viewport);
-        ////proj.setToIdentity();
-        ////proj.perspective(45.0f, width() / height(), 0.1f, 200.f);
-        //paintGL();
-
-        //int hits = glRenderMode(GL_RENDER);
-        //printf("%d hits\n", hits);
-        //if (hits > 0) {
-        //    int id = 0;
-        //    for (int i = 0; i < hits; i++) {
-        //        printf("Level: %u\n", selectBuffer[id + 0]);
-        //        printf("Min: %f\n", (double)selectBuffer[id + 1] / UINT_MAX);
-        //        printf("Max: %f\n", (double)selectBuffer[id + 2] / UINT_MAX);
-        //        printf("ID: %u\n", selectBuffer[id + 3]);
-        //        id += 4;
-        //    }
-        //}
-
-    
-            // 获取鼠标位置
-
-
-            // 渲染到帧缓冲区中
-            gl->glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
-           
-            glViewport(0, 0, width(), height());
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            QPoint pos = event->pos();
-            // 读取深度缓冲区中的深度值
-            GLfloat depth;
-            glReadPixels(pos.x(), height() - pos.y(), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
-
-            // 在渲染到屏幕之前，需要将帧缓冲区绑定到默认的帧缓冲区上
-            gl->glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
-
-            // 检查选定的对象并执行相应的操作
-            if (depth < 1.0) {
-                // 选定了一个网格对象
-                std::cout << "可以" << std::endl;
-            }
-            else {
-                // 没有选中任何网格对象
-                std::cout << "不可以" << std::endl;
-            }
-
-            // 渲染到屏幕上
-            update();
-        
-
- /*       double p1[3], p2[3];
+        int viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
         double modelViewMatrix[16];
         double projectionMatrix[16];
         QMatrix4x4 mVMatrix = (camera->getViewMatrix()) * model;
-        double pickingX = event->x();
-        double pickingY = height() - event->y();
-
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 modelViewMatrix[i * 4 + j] = mVMatrix(i, j);
                 projectionMatrix[i * 4 + j] = proj(i, j);
             }
-        }
-        gluUnProject(pickingX, pickingY, 0, modelViewMatrix, projectionMatrix, viewport, &p1[0], &p1[1], &p1[2]);
-        std::cout << "p1[0] = " << p1[0] << "\t" << "p1[1] = " << p1[1] << "\t" << "p1[2] = " << p1[2] << std::endl
-            << "----------------------------------------------------" << std::endl;
-        gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);*/
+        }       
+        double p1[3];
+        gluUnProject(event->x(), height() - event->y(), 0,
+            modelViewMatrix, projectionMatrix, viewport, &p1[0], &p1[1], &p1[2]);
+        gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
 
     }else{
         setPressPosition(event->pos());
@@ -203,14 +128,10 @@ void MyGLWidget::wheelEvent(QWheelEvent* event) {
     update();
 }
 void MyGLWidget::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Shift){
-        isShiftPressed = true;
-    }
+    if (event->key() == Qt::Key_Shift)  isShiftPressed = true;
 }
 void MyGLWidget::keyReleaseEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Shift){
-        isShiftPressed = false;
-    }
+    if (event->key() == Qt::Key_Shift)  isShiftPressed = false;
 }
 
 void MyGLWidget::setPressPosition(QPoint pressPos) {
@@ -218,8 +139,25 @@ void MyGLWidget::setPressPosition(QPoint pressPos) {
     pressPosition = pressPos;
 }
 void MyGLWidget::translatePoint(QPoint& oriPos) {
-    int x = oriPos.x() - this->width() / 2;
-    int y = -(oriPos.y() - this->height() / 2);
-    oriPos.setX(x);
-    oriPos.setY(y);
+    oriPos.setX(oriPos.x() - this->width() / 2);
+    oriPos.setY(-(oriPos.y() - this->height() / 2));
+}
+void MyGLWidget::rotateModel(QPoint point) {
+    model.setToIdentity();
+    GLfloat angleNow = qSqrt(qPow(point.x(), 2) + qPow(point.y(), 2)) / 5;
+    model.rotate(angleNow, -point.y(), point.x(), 0.0);
+    model = model * modelUse;
+    ;
+    modelSave.setToIdentity();
+    modelSave.rotate(angleNow, -point.y(), point.x(), 0.0);
+    modelSave = modelSave * modelUse;
+}
+void MyGLWidget::translateModel(QPoint point) {
+    model.setToIdentity();
+    model.translate((float)point.x() / 200, (float)point.y() / 200);
+    model = model * modelUse;
+
+    modelSave.setToIdentity();
+    modelSave.translate((float)point.x() / 200, (float)point.y() / 200);
+    modelSave = modelSave * modelUse;
 }
