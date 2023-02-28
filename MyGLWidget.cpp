@@ -115,9 +115,6 @@ void MyGLWidget::paintGL(){
            
         }
         glFunc->glDrawArrays(GL_POINTS, 0, selectPoints.size());
-
-
-   
     }
 
 

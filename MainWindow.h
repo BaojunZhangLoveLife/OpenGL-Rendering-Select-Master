@@ -1,10 +1,10 @@
 #pragma once
 #include <QMainWindow>
 #include "ui_MainWindow.h"
-#include <QTimer>
 #include "MyGLWidget.h"
 #include "DataProcessing.h"
-#include <surfacereconsturction.h>
+#include "surfacereconsturction.h"
+#include <fstream>
 class MainWindow : public QMainWindow{
 	Q_OBJECT
 public:
@@ -27,7 +27,7 @@ private:
 	DataProcessing* meshDataProc;
 
 	std::vector<GLfloat> meshData;
-
+	std::fstream fs;
 	std::vector<QVector3D> originalPointData;
 	std::vector<QVector3D>	pointData3D;
 	bool isOpenGLThreadStart;

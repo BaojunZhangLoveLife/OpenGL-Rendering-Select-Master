@@ -50,7 +50,6 @@ private:
     std::vector<QVector3D> selectPoints;
 
     QOpenGLFunctions_4_5_Core* glFunc;
-
     std::vector<GLfloat> vertices;
     int dataType;
     QPoint pressPosition; 

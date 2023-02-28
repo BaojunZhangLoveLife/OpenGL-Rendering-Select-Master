@@ -71,7 +71,7 @@ void DataProcessing::Normalize(std::vector<QVector3D> data){
 	if (max <= maxCoordinate.y())	max = maxCoordinate.y();
 	if (max <= maxCoordinate.z())	max = maxCoordinate.z();
 
-	float factor = 0.5 / max;
+	float factor = 1.0 / max;
 	for (int i = 0; i < pointData.size(); i++){
 		pointData[i].setX(pointData[i].x() * factor);
 		pointData[i].setY(pointData[i].y() * factor);

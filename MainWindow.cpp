@@ -5,12 +5,14 @@
 #include <QDebug>
 #include "MyGLWidget.h"
 #include "Macro.h"
+
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
 	ui.setupUi(this);
     meshDataProc = new DataProcessing();
     surface = new SurfaceReconsturction();
     isOpenGLThreadStart = true;
     addOpengGLWidget();
+    fs.open("C:/Project/OpenGL-Rendering-Select-Master-Build/Release/Data/aaa.txt");
     connect(ui.startPushBtn, SIGNAL(clicked()), this, SLOT(startRendering()));
     connect(this, SIGNAL(signal_glUpdate()), this, SLOT(gLWidgetUpdate()));
 }
@@ -19,6 +21,7 @@ MainWindow::~MainWindow(){
     delete surface;
     delete myMeshGLWidget;
     delete meshDataProc;
+    fs.close();
 }
 
 // add opengl widget
@@ -57,7 +60,9 @@ void MainWindow::startRendering(){
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker]);
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 1]);
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 2]);
-
+                        fs << meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker] << " "
+                           << meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 1] << " "
+                           << meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 2] << std::endl;
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecVertexNormals[meshLineMarker]);
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecVertexNormals[meshLineMarker + 1]);
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecVertexNormals[meshLineMarker + 2]);
