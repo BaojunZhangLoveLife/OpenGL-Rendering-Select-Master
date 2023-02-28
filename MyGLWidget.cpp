@@ -157,10 +157,10 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         GLfloat winX, winY, winZ;
         winX = (float)x;
         winY = (float)y;
-        glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+        //glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
    
-        gluUnProject(winX, winY, winZ, modelViewMatrix, projectionMatrix, viewport, &selectPoint[0], &selectPoint[1], &selectPoint[2]);
-        std::cout << "selectPoint = " << selectPoint[0] << "\t" << selectPoint[1] << "\t" << selectPoint[2] << std::endl;
+        gluUnProject(winX, winY, 0, modelViewMatrix, projectionMatrix, viewport, &selectPoint[0], &selectPoint[1], &selectPoint[2]);
+        std::cout << "selectPoint = " << selectPoint[0] << "  " << selectPoint[1] << "  " << selectPoint[2] << std::endl;
         QVector3D selectPoint111(selectPoint[0], selectPoint[1], selectPoint[2]);
         selectPoints.push_back(selectPoint111);
         update();
