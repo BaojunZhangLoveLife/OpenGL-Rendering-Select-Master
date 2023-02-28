@@ -1,6 +1,7 @@
 #include "MyGLWidget.h"
 #include <QCoreApplication>
 #include <iostream>
+#include <glut.h>
 MyGLWidget::MyGLWidget(QWidget* parent,int DT){
     dataType = DT;
     camera = new Camera();
@@ -107,11 +108,16 @@ void MyGLWidget::paintGL(){
         meshShader->setUniformMat4("model", model);
         meshShader->setUniformMat4("view", camera->getViewMatrix());
         meshShader->setUniformMat4("proj", proj);
-
-        meshShader->setUniformVec3("pickPosition", selectPoints[0]);
-
         glFunc->glPointSize(10);
+        for (int i = 0; i < selectPoints.size(); i++)
+        {
+            meshShader->setUniformVec3("pickPosition", selectPoints[i]);
+           
+        }
         glFunc->glDrawArrays(GL_POINTS, 0, selectPoints.size());
+
+
+   
     }
 
 
@@ -136,6 +142,8 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
     // Hold the “shift” key and press the "left mouse" button to trigger the "pickup" operation, to 
     if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
+        int x = event->x();
+        int y = height() - event->y();
         int viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
         double modelViewMatrix[16];
@@ -149,10 +157,15 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             }
         }       
         double selectPoint[3];
-        
-        gluUnProject(event->x(), height() - event->y(), 0, modelViewMatrix, projectionMatrix, viewport, &selectPoint[0], &selectPoint[1], &selectPoint[2]);
-        QVector3D aaa(selectPoint[0], selectPoint[1], selectPoint[2]);
-        selectPoints.push_back(aaa);
+        GLfloat winX, winY, winZ;
+        winX = (float)x;
+        winY = (float)y;
+        glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+   
+        gluUnProject(winX, winY, winZ, modelViewMatrix, projectionMatrix, viewport, &selectPoint[0], &selectPoint[1], &selectPoint[2]);
+        std::cout << "selectPoint = " << selectPoint[0] << "\t" << selectPoint[1] << "\t" << selectPoint[2] << std::endl;
+        QVector3D selectPoint111(selectPoint[0], selectPoint[1], selectPoint[2]);
+        selectPoints.push_back(selectPoint111);
         update();
         //gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
     }else{
