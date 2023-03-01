@@ -26,7 +26,7 @@ MainWindow::~MainWindow(){
 
 // add opengl widget
 void MainWindow::addOpengGLWidget(){
-    myMeshGLWidget = new MyGLWidget(this, MeshType);
+    myMeshGLWidget = new MyGLWidget(this);
     myMeshGLWidget->setFixedSize(SCR_WIDTH, SCR_HEIGHT);
     ui.openGLHorizontalLayout->addWidget(myMeshGLWidget);
 }
@@ -60,9 +60,6 @@ void MainWindow::startRendering(){
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker]);
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 1]);
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 2]);
-                        fs << meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker] << " "
-                           << meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 1] << " "
-                           << meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 2] << std::endl;
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecVertexNormals[meshLineMarker]);
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecVertexNormals[meshLineMarker + 1]);
                         meshData.emplace_back(meshDataProc->surfaceModelData.vecVertexNormals[meshLineMarker + 2]);
@@ -72,6 +69,18 @@ void MainWindow::startRendering(){
                     myMeshGLWidget->setImageData(meshData);
                     emit signal_glUpdate();
                 }
+            }
+            if (pointLine >= pointData3D.size()){
+                meshData3D.clear();
+                meshData3D.resize(meshDataProc->surfaceModelData.vecPoints.size() / 3);
+                for (int i = 0; i < meshDataProc->surfaceModelData.vecPoints.size() / 3 ; i++){
+                    meshData3D[i].setX(meshDataProc->surfaceModelData.vecPoints[i]);
+                    meshData3D[i].setY(meshDataProc->surfaceModelData.vecPoints[i + 1]);
+                    meshData3D[i].setZ(meshDataProc->surfaceModelData.vecPoints[i + 2]);
+                }
+                myMeshGLWidget->meshVertices.clear();
+                myMeshGLWidget->meshVertices.resize(meshData3D.size());
+                myMeshGLWidget->meshVertices = meshData3D;
             }
         }
     };

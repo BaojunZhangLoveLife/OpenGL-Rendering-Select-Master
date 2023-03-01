@@ -126,14 +126,12 @@ void DataProcessing::meshConvert(std::string filename) {
 	stlFilter->SetInputData(plyReader->GetOutput());
 	stlFilter->Update();
 
-
 	pcl::PolygonMesh mesh;
 	pcl::io::vtk2mesh(stlFilter->GetOutput(),mesh);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud111(new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::fromPCLPointCloud2(mesh.cloud, *cloud111);
 
-	 //计算法向量
 	std::vector<pcl::Indices> k_indices;
 	std::vector<std::vector<float>> k_sqr_distances;
 
@@ -155,7 +153,7 @@ void DataProcessing::meshConvert(std::string filename) {
 	nr.setConvergenceThreshold(0.1);
 	nr.filter(*normalsRefined);
 
-	WritePlyData(mesh);
+	writePlyData(mesh);
 }
 void DataProcessing::Ply2Stl(std::string ply, std::string stl){
 	vtkSmartPointer<vtkPLYReader> reader = vtkSmartPointer<vtkPLYReader>::New();
@@ -190,13 +188,12 @@ void DataProcessing::Ply2Ply(std::string src, std::string dst){
 }
 
 //Data Type Conversion(transfer mesh object to a ply file)
-void DataProcessing::WritePlyData(pcl::PolygonMesh mesh){
+void DataProcessing::writePlyData(pcl::PolygonMesh mesh){
 	std::ofstream fs;
 	fs.open("C:/Project/OpenGL-Rendering-Master-Build/savePLYFile.ply");
 	if (fs){
 		int nr_points = mesh.cloud.width * mesh.cloud.height;
 		int point_size = mesh.cloud.data.size() / nr_points;
-
 		int nr_faces = mesh.polygons.size();
 
 		// Write header
@@ -220,10 +217,7 @@ void DataProcessing::WritePlyData(pcl::PolygonMesh mesh){
 		for (std::size_t i = 0; i < nr_points; i++) {
 			for (std::size_t d = 0; d < mesh.cloud.fields.size(); ++d) {
 				// adding vertex
-				if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
-					mesh.cloud.fields[d].name == "x" ||
-					mesh.cloud.fields[d].name == "y" ||
-					mesh.cloud.fields[d].name == "z")) {
+				if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (mesh.cloud.fields[d].name == "x" ||mesh.cloud.fields[d].name == "y" ||mesh.cloud.fields[d].name == "z")) {
 					float value;
 					memcpy(&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset], sizeof(float));
 					fs << value << " ";
@@ -388,8 +382,7 @@ void DataProcessing::getNormalVector(std::string pcdPath){
 	for (size_t i = 0; i < cloud->size(); ++i){
 		pcl::Normal normal;
 		ne.computePointNormal(*cloud, k_indices[i], normal.normal_x, normal.normal_y, normal.normal_z, normal.curvature);
-		pcl::flipNormalTowardsViewpoint((*cloud)[i], (*cloud).sensor_origin_[0], 
-			(*cloud).sensor_origin_[1], (*cloud).sensor_origin_[2], normal.normal_x, normal.normal_y, normal.normal_z);
+		pcl::flipNormalTowardsViewpoint((*cloud)[i], (*cloud).sensor_origin_[0], (*cloud).sensor_origin_[1], (*cloud).sensor_origin_[2], normal.normal_x, normal.normal_y, normal.normal_z);
 		normals->emplace_back(normal);
 	}
 	pcl::NormalRefinement<pcl::Normal> nr(k_indices, k_sqr_distances);

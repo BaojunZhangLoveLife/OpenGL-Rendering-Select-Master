@@ -22,7 +22,7 @@ public:
 	void getMeshData(pcl::PolygonMesh mesh);
 	void getNormalVector(std::string pcdPath);
 
-	void WritePlyData(pcl::PolygonMesh mesh);
+	void writePlyData(pcl::PolygonMesh mesh);
 	void Ply2Pcd(std::string ply, std::string pcd);
 	void Stl2Ply(std::string stl, std::string ply);
 	void Ply2Stl(std::string ply, std::string stl);
