@@ -137,7 +137,6 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
 }
 
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
-    // Hold the “shift” key and press the "left mouse" button to trigger the "pickup" operation, to 
     if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
         int x = event->x();
         int y = height() - event->y();
@@ -157,14 +156,11 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         GLfloat winX, winY, winZ;
         winX = (float)x;
         winY = (float)y;
-        //glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
-   
         gluUnProject(winX, winY, 0, modelViewMatrix, projectionMatrix, viewport, &selectPoint[0], &selectPoint[1], &selectPoint[2]);
         std::cout << "selectPoint = " << selectPoint[0] << "  " << selectPoint[1] << "  " << selectPoint[2] << std::endl;
         QVector3D selectPoint111(selectPoint[0], selectPoint[1], selectPoint[2]);
         selectPoints.push_back(selectPoint111);
         update();
-        //gluPickMatrix(event->x(), height() - event->y(), 5, 5, viewport);
     }else{
         setPressPosition(event->pos());
         modelUse = modelSave;
