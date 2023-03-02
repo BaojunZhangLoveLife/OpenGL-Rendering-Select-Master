@@ -15,6 +15,7 @@
 #include <vtkPLYReader.h>
 #include <vtkPLYWriter.h>
 #include <vtkTriangleFilter.h>
+
 DataProcessing::DataProcessing() {
 	normalsRefined.reset(new pcl::PointCloud<pcl::Normal>);
 }
@@ -22,18 +23,17 @@ DataProcessing::~DataProcessing() {
 
 }
 // clear mesh data
-void DataProcessing::ClearMeshData(){
+void DataProcessing::clearMeshData(){
 	surfaceModelData.vecFaceTriangles.clear();
 	surfaceModelData.vecVertexNormals.clear();
 	surfaceModelData.vecPoints.clear();
 }
-std::string DataProcessing::GetAppPath(){
+std::string DataProcessing::getProgramPath(){
 	QString qAppDir = QCoreApplication::applicationDirPath();
-	std::string::size_type iPos = (qAppDir.toStdString().find_last_of('\\') + 1) == 0 ?
-		qAppDir.toStdString().find_last_of('/') + 1 : qAppDir.toStdString().find_last_of('\\') + 1;
+	std::string::size_type iPos = (qAppDir.toStdString().find_last_of('\\') + 1) == 0 ? qAppDir.toStdString().find_last_of('/') + 1 : qAppDir.toStdString().find_last_of('\\') + 1;
 	return qAppDir.toStdString().substr(0, iPos);
 }
-void DataProcessing::LoadPointData(const char* path){
+void DataProcessing::loadPointData(const char* path){
 	std::fstream readTextData(path);
 	if (!readTextData) return;
 	float x, y, z;
@@ -44,7 +44,7 @@ void DataProcessing::LoadPointData(const char* path){
 	readTextData.close();
 }
 // get center point of point data.
-void DataProcessing::GetCenterPoint(QVector3D& vec){
+void DataProcessing::getCenterPoint(QVector3D& vec){
 	if (0 == pointData.size()) return;
 	vec = {
 		(maxCoordinate.x() + minCoordinate.x()) / 2,
@@ -52,19 +52,19 @@ void DataProcessing::GetCenterPoint(QVector3D& vec){
 		(maxCoordinate.z() + minCoordinate.z()) / 2
 	};
 }
-// Normalize the original point cloud data
-void DataProcessing::Normalize(std::vector<QVector3D> data){
+// normalize the original point cloud data
+void DataProcessing::normalize(std::vector<QVector3D> data){
 	pointData = data;
-	GetXYZMaxMin();
+	getXYZMaxMin();
 
 	QVector3D centerPoint;
-	GetCenterPoint(centerPoint);
+	getCenterPoint(centerPoint);
 	for (int i = 0; i < pointData.size(); i++){
 		pointData[i].setX(pointData[i].x() - centerPoint.x());
 		pointData[i].setY(pointData[i].y() - centerPoint.y());
 		pointData[i].setZ(pointData[i].z() - centerPoint.z());
 	}
-	GetXYZMaxMin();
+	getXYZMaxMin();
 
 	float max = 0;
 	if (max <= maxCoordinate.x())	max = maxCoordinate.x();
@@ -79,7 +79,7 @@ void DataProcessing::Normalize(std::vector<QVector3D> data){
 	}
 }
 // max and min XYZ.
-void DataProcessing::GetXYZMaxMin(){
+void DataProcessing::getXYZMaxMin(){
 	if (0 == pointData.size())	return;
 	QVector3D vecMax = {pointData[0].x(),pointData[0].y(),pointData[0].z()};
 	QVector3D vecMin = vecMax;
@@ -96,13 +96,31 @@ void DataProcessing::GetXYZMaxMin(){
 	maxCoordinate = vecMax;
 	minCoordinate = vecMin;
 }
-void DataProcessing::Ply2Pcd(std::string ply, std::string pcd){
+// transform a mesh into a mesh ,the former mesh has various faces(triangle,quadrangle,pentagon.etc), the next mesh has only a triangle face.
+void DataProcessing::ply2ply(std::string src, std::string dst) {
+	vtkSmartPointer<vtkPLYReader> ply2plyPlyReader = vtkSmartPointer<vtkPLYReader>::New();
+	ply2plyPlyReader->SetFileName(src.c_str());
+	ply2plyPlyReader->Update();
+
+	vtkSmartPointer<vtkTriangleFilter> ply2plyStlFilter = vtkSmartPointer<vtkTriangleFilter>::New();
+	ply2plyStlFilter->SetInputData(ply2plyPlyReader->GetOutput());
+
+	vtkSmartPointer<vtkPLYWriter> ply2plyPlyWriter = vtkSmartPointer<vtkPLYWriter>::New();
+	ply2plyPlyWriter->SetFileName(dst.c_str());
+	ply2plyPlyWriter->SetInputConnection(ply2plyStlFilter->GetOutputPort());
+	ply2plyPlyWriter->SetFileTypeToASCII();
+	ply2plyPlyWriter->SetColorModeToOff();
+	ply2plyPlyWriter->Update();
+	ply2plyPlyWriter->Write();
+}
+
+void DataProcessing::ply2pcd(std::string ply, std::string pcd){
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::io::loadPLYFile<pcl::PointXYZ>(ply, *cloud);
 	pcl::io::savePCDFile(pcd, *cloud);
 }
 
-void DataProcessing::Stl2Ply(std::string stl, std::string ply){
+void DataProcessing::stl2ply(std::string stl, std::string ply){
 	std::string filename = stl;
 	vtkSmartPointer<vtkSTLReader> reader = vtkSmartPointer<vtkSTLReader>::New();
 	reader->SetFileName(filename.c_str());
@@ -155,7 +173,7 @@ void DataProcessing::meshConvert(std::string filename) {
 
 	writePlyData(mesh);
 }
-void DataProcessing::Ply2Stl(std::string ply, std::string stl){
+void DataProcessing::ply2stl(std::string ply, std::string stl){
 	vtkSmartPointer<vtkPLYReader> reader = vtkSmartPointer<vtkPLYReader>::New();
 	reader->SetFileName(ply.c_str());
 	reader->Update();
@@ -190,7 +208,7 @@ void DataProcessing::Ply2Ply(std::string src, std::string dst){
 //Data Type Conversion(transfer mesh object to a ply file)
 void DataProcessing::writePlyData(pcl::PolygonMesh mesh){
 	std::ofstream fs;
-	fs.open("C:/Project/OpenGL-Rendering-Master-Build/savePLYFile.ply");
+	fs.open("C:/Project/OpenGL-Rendering-Master-Build/finalMesh.ply");
 	if (fs){
 		int nr_points = mesh.cloud.width * mesh.cloud.height;
 		int point_size = mesh.cloud.data.size() / nr_points;
@@ -240,7 +258,7 @@ void DataProcessing::loadMeshData(char* filename){
 	FILE* file = fopen(filename, "r");
 	if (file){
 		fseek(file, 0, SEEK_END);
-		ClearMeshData();
+		clearMeshData();
 		float* surfaceVertexXYZ = (float*)malloc(ftell(file));
 		float* surfaceVertexNorm = (float*)malloc(ftell(file));
 		fseek(file, 0, SEEK_SET);
@@ -283,7 +301,7 @@ void DataProcessing::loadMeshData(char* filename){
 			pointData.emplace_back(data);
 			index += 3;
 		}
-		Normalize(pointData);
+		normalize(pointData);
 		for (int i = 0; i < pointData.size(); i++){
 			surfaceModelData.vecPoints.emplace_back(pointData[i].x());
 			surfaceModelData.vecPoints.emplace_back(pointData[i].y());
@@ -354,7 +372,7 @@ void DataProcessing::getMeshData(pcl::PolygonMesh mesh){
 		meshVertex3D[i] = { meshVertex1D[index], meshVertex1D[index+1], meshVertex1D[index+2] };
 		index += 3;
 	}
-	Normalize(meshVertex3D);
+	normalize(meshVertex3D);
 	meshData.clear();
 	for (std::size_t i = 0; i < nr_faces; i++){
 		for (std::size_t j = 0; j < mesh.polygons[i].vertices.size(); j++){

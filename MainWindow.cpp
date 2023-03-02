@@ -37,7 +37,7 @@ void MainWindow::gLWidgetUpdate() {
 // Begin render
 void MainWindow::startRendering(){
     QString fileName = "C:/Project/OpenGL-Rendering-Select-Master/Data/originalData.txt";
-    meshDataProc->LoadPointData(fileName.toStdString().c_str());
+    meshDataProc->loadPointData(fileName.toStdString().c_str());
     pointData3D.resize(meshDataProc->pointData.size());
     pointData3D = meshDataProc->pointData;
 
@@ -49,11 +49,19 @@ void MainWindow::startRendering(){
             if ((originalPointData.size() >= MIN_POINTS_SIZE_REQUIRED)) {
                 if (((pointLine % MESH_INCREASE_SIZE) == 0) || (pointLine >= pointData3D.size())) {
                     surface->construction(originalPointData);
-                    std::string resultPath = "C:/Project/OpenGL-Rendering-Master-Build/result.ply";
-                    std::string savePlyFilePath = "C:/Project/OpenGL-Rendering-Master-Build/savePLYFile.ply";
+         
+                    std::string oriPlyPath = "C:/Project/OpenGL-Rendering-Master-Build/result.ply";
+                    std::string transMeshPlyPath = "C:/Project/OpenGL-Rendering-Master-Build/transMesh.ply";
+                    std::string transMeshPcdPath = "C:/Project/OpenGL-Rendering-Master-Build/transMesh.pcd";
+                    std::string finalMeshPath = "C:/Project/OpenGL-Rendering-Master-Build/finalMesh.ply";
 
-                    meshDataProc->meshConvert(resultPath);
-                    meshDataProc->loadMeshData(savePlyFilePath.data());
+                    meshDataProc->ply2ply(oriPlyPath, transMeshPlyPath);
+                    meshDataProc->ply2pcd(transMeshPlyPath, transMeshPcdPath);
+                    meshDataProc->getNormalVector(transMeshPcdPath);
+                    pcl::PolygonMesh mesh;
+                    pcl::io::loadPLYFile(transMeshPlyPath, mesh);
+                    meshDataProc->writePlyData(mesh);
+                    meshDataProc->loadMeshData(finalMeshPath.data());
 
                     for (int i = 0, meshLineMarker = 0; i < meshDataProc->surfaceModelData.vecFaceTriangles.size() / 3; i++) {
                         if (i == 0) meshData.clear();

@@ -13,29 +13,38 @@ class DataProcessing{
 public:
 	DataProcessing();
 	~DataProcessing();
-	std::string GetAppPath();
-	void Normalize(std::vector<QVector3D> data);
+	// Get the current path of the program
+	std::string getProgramPath();
+	// normalize the original point cloud data
+	void normalize(std::vector<QVector3D> data);
 
-	void LoadPointData(const char* path);
+	void loadPointData(const char* filename);
 	void loadMeshData(char* filename);
 
-	void getMeshData(pcl::PolygonMesh mesh);
-	void getNormalVector(std::string pcdPath);
+	void getMeshData(pcl::PolygonMesh meshPath);
+	void getNormalVector(std::string cloudPath);
 
+	/// ----------------------------------------
+	/// Interface for data type conversion
+	/// ----------------------------------------
 	void writePlyData(pcl::PolygonMesh mesh);
-	void Ply2Pcd(std::string ply, std::string pcd);
-	void Stl2Ply(std::string stl, std::string ply);
-	void Ply2Stl(std::string ply, std::string stl);
+	void ply2ply(std::string src, std::string dst);
+	void ply2pcd(std::string ply, std::string pcd);
+	void stl2ply(std::string stl, std::string ply);
+	void ply2stl(std::string ply, std::string stl);
 	void Ply2Ply(std::string src, std::string dst);
 	void meshConvert(std::string filename);
+	/// ----------------------------------------
+	/// Set of variables for processing data
+	/// ----------------------------------------
 	std::vector<QVector3D>		pointData;
 	std::vector<float>			meshData;
 	SurfaceModelData			surfaceModelData;
 
 private:
-	void ClearMeshData();
-	void GetXYZMaxMin();
-	void GetCenterPoint(QVector3D& vec);
+	void clearMeshData();
+	void getXYZMaxMin();
+	void getCenterPoint(QVector3D& vec);
 
 	QVector3D maxCoordinate;
 	QVector3D minCoordinate;
