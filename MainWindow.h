@@ -28,7 +28,6 @@ private:
 
 	std::vector<GLfloat> meshData;
 	std::vector<QVector3D>	meshData3D;
-	std::fstream fs;
 	std::vector<QVector3D> originalPointData;
 	std::vector<QVector3D>	pointData3D;
 	bool isOpenGLThreadStart;

@@ -3,11 +3,17 @@
 #include <iostream>
 #include <glut.h>
 #include <cmath>
+#include <fstream>
+#include <sstream> 
+#include <DataProcessing.h>
+
+
 MyGLWidget::MyGLWidget(QWidget* parent){
     camera = new Camera();
     proj.setToIdentity();
     proj.perspective(45.0f, width() / height(), 0.1f, 200.f);
     this->grabKeyboard();
+    dataProc = new DataProcessing();
 }
 
 MyGLWidget::~MyGLWidget(){
@@ -96,12 +102,23 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
 
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
     if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
+        std::ofstream fs;
+        // Load point cloud from text file
         QVector3D worldPos  = convertScreenToWorld(event->pos());
         int vertexIndex = findNearestVertex(worldPos);
         if (vertexIndex != -1) {
-            std::cout << "可以" << std::endl;
+            std::string pcdPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.pcd";
+            pcl::PointXYZ query_point;
+            query_point.x = meshVertices[vertexIndex].x();
+            query_point.y = meshVertices[vertexIndex].y();
+            query_point.z = meshVertices[vertexIndex].z();
+            
+            dataProc->nearestKSearch(pcdPath, query_point);
         }
-        update();
+
+
+
+       /* update();*/
     }else{
         setPressPosition(event->pos());
         modelUse = modelSave;

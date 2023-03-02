@@ -11,7 +11,8 @@
 #include <QOpenGLFunctions_4_5_Core>
 #include <QOpenGLFunctions>
 #include <gl/GLU.h>
-
+#include <fstream>
+#include <DataProcessing.h>
 enum DataType{
     PointType,
     MeshType
@@ -67,6 +68,7 @@ private:
     GLuint meshVAO, meshVBO;
     GLuint selectVAO, selectVBO;
     bool isShiftPressed = false;
+    DataProcessing* dataProc;
 };
 
 #endif 

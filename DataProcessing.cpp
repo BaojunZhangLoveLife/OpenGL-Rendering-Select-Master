@@ -52,6 +52,36 @@ void DataProcessing::getCenterPoint(QVector3D& vec){
 		(maxCoordinate.z() + minCoordinate.z()) / 2
 	};
 }
+void DataProcessing::txt2pcd(std::string filename, std::string pcdPath){
+	std::ifstream fs;
+	pcl::PointCloud<pcl::PointXYZ> cloud;
+	fs.open(filename.c_str(), std::ios::binary);
+	if (!fs.is_open() || fs.fail()){
+		PCL_ERROR("Could not open file '%s'! Error : %s\n", filename.c_str(), strerror(errno));
+		fs.close();
+		return;
+	}
+	std::string line;
+	std::vector<std::string> st;
+
+	while (!fs.eof()){
+		std::getline(fs, line);
+		// Ignore empty lines
+		if (line.empty())
+			continue;
+		boost::trim(line);
+		boost::split(st, line, boost::is_any_of("\t\r "), boost::token_compress_on);
+
+		if (st.size() != 3)
+			continue;
+		cloud.push_back(pcl::PointXYZ(float(atof(st[0].c_str())), float(atof(st[1].c_str())), float(atof(st[2].c_str()))));
+	}
+	fs.close();
+	cloud.width = cloud.size(); cloud.height = 1; cloud.is_dense = true;
+	pcl::PCDWriter w;
+	w.writeASCII(pcdPath,cloud);
+
+}
 // normalize the original point cloud data
 void DataProcessing::normalize(std::vector<QVector3D> data){
 	pointData = data;
@@ -119,7 +149,24 @@ void DataProcessing::ply2pcd(std::string ply, std::string pcd){
 	pcl::io::loadPLYFile<pcl::PointXYZ>(ply, *cloud);
 	pcl::io::savePCDFile(pcd, *cloud);
 }
+void DataProcessing::nearestKSearch(std::string txtPath, pcl::PointXYZ query_point) {
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	if (pcl::io::loadPCDFile<pcl::PointXYZ>(txtPath, *cloud) == -1){
+		PCL_ERROR("Couldn't read file.\n");
+		return;
+	}
+	pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtree(new pcl::KdTreeFLANN<pcl::PointXYZ>);
+	kdtree->setInputCloud(cloud);
+	std::vector<int> k_indices;
+	std::vector<float> k_distances;
+	int k = 10; 
+	kdtree->nearestKSearch(query_point, k, k_indices, k_distances);
 
+	for (int i = 0; i < k_indices.size(); ++i){
+		pcl::PointXYZ& nearest_point = cloud->points[k_indices[i]];
+		std::cout << "Nearest neighbor " << i << ": (" << nearest_point.x << ", " << nearest_point.y << ", " << nearest_point.z << ") " << "distance=" << k_distances[i] << std::endl;
+	}
+}
 void DataProcessing::stl2ply(std::string stl, std::string ply){
 	std::string filename = stl;
 	vtkSmartPointer<vtkSTLReader> reader = vtkSmartPointer<vtkSTLReader>::New();
@@ -186,23 +233,6 @@ void DataProcessing::ply2stl(std::string ply, std::string stl){
 	writer->SetInputData(polyData);
 	writer->SetFileName(stl.c_str());
 	writer->Write();
-}
-
-void DataProcessing::Ply2Ply(std::string src, std::string dst){
-	vtkSmartPointer<vtkPLYReader> plyReader = vtkSmartPointer<vtkPLYReader>::New();
-	plyReader->SetFileName(src.c_str());
-	plyReader->Update();
-
-	vtkSmartPointer<vtkTriangleFilter> stlFilter = vtkSmartPointer<vtkTriangleFilter>::New();
-	stlFilter->SetInputData(plyReader->GetOutput());
-	stlFilter->Update();
-	vtkSmartPointer<vtkPLYWriter> plyWriter = vtkSmartPointer<vtkPLYWriter>::New();
-	plyWriter->SetFileName(dst.c_str());
-	plyWriter->SetInputConnection(stlFilter->GetOutputPort());
-	plyWriter->SetFileTypeToASCII();
-	plyWriter->SetColorModeToOff();
-	plyWriter->Update();
-	plyWriter->Write();
 }
 
 //Data Type Conversion(transfer mesh object to a ply file)

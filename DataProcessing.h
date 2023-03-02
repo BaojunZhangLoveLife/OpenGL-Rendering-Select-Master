@@ -32,7 +32,9 @@ public:
 	void ply2pcd(std::string ply, std::string pcd);
 	void stl2ply(std::string stl, std::string ply);
 	void ply2stl(std::string ply, std::string stl);
-	void Ply2Ply(std::string src, std::string dst);
+	void txt2pcd(std::string filename, std::string pcdPath);
+
+	void nearestKSearch(std::string txtPath, pcl::PointXYZ query_point);
 	void meshConvert(std::string filename);
 	/// ----------------------------------------
 	/// Set of variables for processing data

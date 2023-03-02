@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     surface = new SurfaceReconsturction();
     isOpenGLThreadStart = true;
     addOpengGLWidget();
-    fs.open("C:/Project/OpenGL-Rendering-Select-Master-Build/Release/Data/aaa.txt");
+  
     connect(ui.startPushBtn, SIGNAL(clicked()), this, SLOT(startRendering()));
     connect(this, SIGNAL(signal_glUpdate()), this, SLOT(gLWidgetUpdate()));
 }
@@ -21,7 +21,6 @@ MainWindow::~MainWindow(){
     delete surface;
     delete myMeshGLWidget;
     delete meshDataProc;
-    fs.close();
 }
 
 // add opengl widget
@@ -36,7 +35,7 @@ void MainWindow::gLWidgetUpdate() {
 }
 // Begin render
 void MainWindow::startRendering(){
-    QString fileName = "C:/Project/OpenGL-Rendering-Select-Master/Data/originalData.txt";
+    QString fileName = "C:/Project/OpenGL-Rendering-Master-Build/originalData.txt";
     meshDataProc->loadPointData(fileName.toStdString().c_str());
     pointData3D.resize(meshDataProc->pointData.size());
     pointData3D = meshDataProc->pointData;
@@ -79,13 +78,21 @@ void MainWindow::startRendering(){
                 }
             }
             if (pointLine >= pointData3D.size()){
+                std::fstream fs;
+                std::string txtPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.txt";
+                std::string pcdPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.pcd";
+                fs.open(txtPath,'w');
                 meshData3D.clear();
                 meshData3D.resize(meshDataProc->surfaceModelData.vecPoints.size() / 3);
                 for (int i = 0; i < meshDataProc->surfaceModelData.vecPoints.size() / 3 ; i++){
                     meshData3D[i].setX(meshDataProc->surfaceModelData.vecPoints[i]);
                     meshData3D[i].setY(meshDataProc->surfaceModelData.vecPoints[i + 1]);
                     meshData3D[i].setZ(meshDataProc->surfaceModelData.vecPoints[i + 2]);
+                    fs << meshData3D[i].x() << " " << meshData3D[i].y() << " " << meshData3D[i].z() << " " << std::endl;
                 }
+                fs.close();          
+                meshDataProc->txt2pcd(txtPath, pcdPath);
+
                 myMeshGLWidget->meshVertices.clear();
                 myMeshGLWidget->meshVertices.resize(meshData3D.size());
                 myMeshGLWidget->meshVertices = meshData3D;
