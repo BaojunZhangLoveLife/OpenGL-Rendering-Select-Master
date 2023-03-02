@@ -39,7 +39,7 @@ protected:
     void keyReleaseEvent(QKeyEvent* event);
     // 
     void setPressPosition(QPoint p_ab);
-    void translatePoint(QPoint& p_ab);
+    void convertPoint(QPoint& p_ab);
     // 
     void rotateModel(QPoint point);
     void translateModel(QPoint point);

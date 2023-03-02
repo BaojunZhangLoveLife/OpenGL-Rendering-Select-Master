@@ -12,7 +12,7 @@ MyGLWidget::MyGLWidget(QWidget* parent){
 
 MyGLWidget::~MyGLWidget(){
     delete meshShader;
-    delete selectShader;
+    //delete selectShader;
     glFunc->glDeleteVertexArrays(1, &meshVAO);
     glFunc->glDeleteBuffers(1, &meshVBO);
 }
@@ -61,16 +61,14 @@ void MyGLWidget::drawMesh() {
 }
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
-
     QString qAppDir = QCoreApplication::applicationDirPath();
     QString meshVert = qAppDir + "/Shader/mesh.vert", meshFrag = qAppDir + "/Shader/mesh.frag";
     meshShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
-    selectShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
+    //selectShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
 
     glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
     glFunc->glEnable(GL_DEPTH_TEST);
     glFunc->glEnable(GL_SELECT);
-
 }
 // paintGL
 void MyGLWidget::paintGL(){
@@ -84,9 +82,9 @@ void MyGLWidget::resizeGL(int width, int height){
 }
 
 void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
-    QPoint posMouse = event->pos();
-    translatePoint(posMouse);
-    QPoint subPoint = posMouse - pressPosition;
+    QPoint mousePosition = event->pos();
+    convertPoint(mousePosition);
+    QPoint subPoint = mousePosition - pressPosition;
     if (event->buttons() & Qt::LeftButton) {
         rotateModel(subPoint);
     }
@@ -103,43 +101,11 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         if (vertexIndex != -1) {
             std::cout << "可以" << std::endl;
         }
-
         update();
     }else{
         setPressPosition(event->pos());
         modelUse = modelSave;
     }
-}
-// Convert screen coordinates to world coordinates
-QVector3D MyGLWidget::convertScreenToWorld(QPoint screenPoint) {
-    int viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    double modelViewMatrix[16];
-    double projectionMatrix[16];
-    QMatrix4x4 mVMatrix = (camera->getViewMatrix()) * model;
-
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            modelViewMatrix[i * 4 + j] = mVMatrix(i, j);
-            projectionMatrix[i * 4 + j] = proj(i, j);
-        }
-    }
-    double worldX, worldY, worldZ;
-    gluUnProject(screenPoint.x(), height() - screenPoint.y(), 0, modelViewMatrix, projectionMatrix, viewport, &worldX, &worldY, &worldZ);
-    return QVector3D(worldX, worldY, worldZ);
-}
-// Find the nearest vertex of the world coordinate point
-int MyGLWidget::findNearestVertex(QVector3D worldPos) {
-    int nearestVertexIndex = -1;
-    float minDist = std::numeric_limits<float>::max();
-    for (int i = 0; i < meshVertices.size(); i++) {
-        float dist = (meshVertices[i] - worldPos).length();
-        if (dist < minDist) {
-            nearestVertexIndex = i;
-            minDist = dist;
-        }
-    }
-    return nearestVertexIndex;
 }
 
 void MyGLWidget::mouseReleaseEvent(QMouseEvent* event) {
@@ -160,11 +126,24 @@ void MyGLWidget::keyReleaseEvent(QKeyEvent* event) {
         isShiftPressed = false;
 }
 
+// Find the nearest vertex of the world coordinate point
+int MyGLWidget::findNearestVertex(QVector3D worldPos) {
+    int nearestVertexIndex = -1;
+    float minDist = std::numeric_limits<float>::max();
+    for (int i = 0; i < meshVertices.size(); i++) {
+        float dist = (meshVertices[i] - worldPos).length();
+        if (dist < minDist) {
+            nearestVertexIndex = i;
+            minDist = dist;
+        }
+    }
+    return nearestVertexIndex;
+}
 void MyGLWidget::setPressPosition(QPoint pressPos) {
-    translatePoint(pressPos);
+    convertPoint(pressPos);
     pressPosition = pressPos;
 }
-void MyGLWidget::translatePoint(QPoint& oriPos) {
+void MyGLWidget::convertPoint(QPoint& oriPos) {
     oriPos.setX(oriPos.x() - this->width() / 2);
     oriPos.setY(-(oriPos.y() - this->height() / 2));
 }
@@ -186,4 +165,22 @@ void MyGLWidget::translateModel(QPoint point) {
     modelSave.setToIdentity();
     modelSave.translate((float)point.x() / 200, (float)point.y() / 200);
     modelSave = modelSave * modelUse;
+}
+// Convert screen coordinates to world coordinates
+QVector3D MyGLWidget::convertScreenToWorld(QPoint screenPoint) {
+    int viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    double modelViewMatrix[16];
+    double projectionMatrix[16];
+    QMatrix4x4 mVMatrix = (camera->getViewMatrix()) * model;
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            modelViewMatrix[i * 4 + j] = mVMatrix(i, j);
+            projectionMatrix[i * 4 + j] = proj(i, j);
+        }
+    }
+    double worldX, worldY, worldZ;
+    gluUnProject(screenPoint.x(), height() - screenPoint.y(), 0, modelViewMatrix, projectionMatrix, viewport, &worldX, &worldY, &worldZ);
+    return QVector3D(worldX, worldY, worldZ);
 }
