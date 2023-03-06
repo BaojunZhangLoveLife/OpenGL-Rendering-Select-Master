@@ -108,7 +108,7 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         int vertexIndex = dataProc->findNearestVertex(worldPos, meshVertices);
         if (vertexIndex != -1) {
             std::string basePath = "C:/Project/OpenGL-Rendering-Master-Build/";
-            std::string pcdPath = basePath + "gl_PointCloud.pcd";
+            std::string pcdPath = basePath + "/gl_PointCloud.pcd";
             pcl::PointXYZ query_point;
             query_point.x = meshVertices[vertexIndex].x();
             query_point.y = meshVertices[vertexIndex].y();
@@ -119,6 +119,7 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
                 meshVertices.erase(meshVertices.begin() + *it);
             }
             surface->construction(meshVertices);
+
 
             std::string oriPlyPath = basePath + "result.ply";
             std::string transMeshPlyPath = basePath + "transMesh.ply";
