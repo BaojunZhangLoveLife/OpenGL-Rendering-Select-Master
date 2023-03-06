@@ -59,7 +59,7 @@ public:
 	std::vector<QVector3D>		pointData;
 	std::vector<float>			meshData;
 	SurfaceData					surfaceData;
-
+	std::vector<float> test(std::string oriPlyPath, std::string transMeshPlyPath, std::string transMeshPcdPath, std::string finalMeshPath);
 private:
 	void clearMeshData();
 	void getXYZMaxMin();

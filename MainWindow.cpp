@@ -53,26 +53,8 @@ void MainWindow::startRendering(){
                     std::string transMeshPlyPath = "C:/Project/OpenGL-Rendering-Master-Build/transMesh.ply";
                     std::string transMeshPcdPath = "C:/Project/OpenGL-Rendering-Master-Build/transMesh.pcd";
                     std::string finalMeshPath = "C:/Project/OpenGL-Rendering-Master-Build/finalMesh.ply";
-
-                    meshDataProc->ply2ply(oriPlyPath, transMeshPlyPath);
-                    meshDataProc->ply2pcd(transMeshPlyPath, transMeshPcdPath);
-                    meshDataProc->getNormalVector(transMeshPcdPath);
-                    pcl::PolygonMesh mesh;
-                    pcl::io::loadPLYFile(transMeshPlyPath, mesh);
-                    meshDataProc->writePlyData(mesh);
-                    meshDataProc->loadMeshData(finalMeshPath.data());
-
-                    for (int i = 0, meshLineMarker = 0; i < meshDataProc->surfaceData.vecFaceTriangles.size() / 3; i++) {
-                        if (i == 0) meshData.clear();
-                        meshData.emplace_back(meshDataProc->surfaceData.vecFaceTriangles[meshLineMarker]);
-                        meshData.emplace_back(meshDataProc->surfaceData.vecFaceTriangles[meshLineMarker + 1]);
-                        meshData.emplace_back(meshDataProc->surfaceData.vecFaceTriangles[meshLineMarker + 2]);
-                        meshData.emplace_back(meshDataProc->surfaceData.vecVertexNormals[meshLineMarker]);
-                        meshData.emplace_back(meshDataProc->surfaceData.vecVertexNormals[meshLineMarker + 1]);
-                        meshData.emplace_back(meshDataProc->surfaceData.vecVertexNormals[meshLineMarker + 2]);
-
-                        meshLineMarker += 3;
-                    }
+                    meshData = meshDataProc->test(oriPlyPath, transMeshPlyPath, transMeshPcdPath, finalMeshPath);
+                    
                     myMeshGLWidget->setImageData(meshData);
                     emit signal_glUpdate();
                 }

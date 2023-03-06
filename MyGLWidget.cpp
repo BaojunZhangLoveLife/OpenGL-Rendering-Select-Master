@@ -107,7 +107,8 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         QVector3D worldPos  = convertScreenToWorld(event->pos());
         int vertexIndex = dataProc->findNearestVertex(worldPos, meshVertices);
         if (vertexIndex != -1) {
-            std::string pcdPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.pcd";
+            std::string basePath = "C:/Project/OpenGL-Rendering-Master-Build/";
+            std::string pcdPath = basePath + "gl_PointCloud.pcd";
             pcl::PointXYZ query_point;
             query_point.x = meshVertices[vertexIndex].x();
             query_point.y = meshVertices[vertexIndex].y();
@@ -119,30 +120,14 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             }
             surface->construction(meshVertices);
 
-            std::string oriPlyPath = "C:/Project/OpenGL-Rendering-Master-Build/result.ply";
-            std::string transMeshPlyPath = "C:/Project/OpenGL-Rendering-Master-Build/transMesh.ply";
-            std::string transMeshPcdPath = "C:/Project/OpenGL-Rendering-Master-Build/transMesh.pcd";
-            std::string finalMeshPath = "C:/Project/OpenGL-Rendering-Master-Build/finalMesh.ply";
+            std::string oriPlyPath = basePath + "result.ply";
+            std::string transMeshPlyPath = basePath + "transMesh.ply";
+            std::string transMeshPcdPath = basePath + "transMesh.pcd";
+            std::string finalMeshPath = basePath + "finalMesh.ply";
 
-            dataProc->ply2ply(oriPlyPath, transMeshPlyPath);
-            dataProc->ply2pcd(transMeshPlyPath, transMeshPcdPath);
-            dataProc->getNormalVector(transMeshPcdPath);
-            pcl::PolygonMesh mesh;
-            pcl::io::loadPLYFile(transMeshPlyPath, mesh);
-            dataProc->writePlyData(mesh);
-            dataProc->loadMeshData(finalMeshPath.data());
+            vertices = dataProc->test(oriPlyPath, transMeshPlyPath, transMeshPcdPath, finalMeshPath);
 
-            for (int i = 0, meshLineMarker = 0; i < dataProc->surfaceData.vecFaceTriangles.size() / 3; i++) {
-                if (i == 0) vertices.clear();
-                vertices.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker]);
-                vertices.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker + 1]);
-                vertices.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker + 2]);
-                vertices.emplace_back(dataProc->surfaceData.vecVertexNormals[meshLineMarker]);
-                vertices.emplace_back(dataProc->surfaceData.vecVertexNormals[meshLineMarker + 1]);
-                vertices.emplace_back(dataProc->surfaceData.vecVertexNormals[meshLineMarker + 2]);
-
-                meshLineMarker += 3;
-            }
+           
         }
         paintGL();
     }else{

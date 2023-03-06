@@ -387,3 +387,26 @@ void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4
 	modelSave.translate((float)point.x() / 200, (float)point.y() / 200);
 	modelSave = modelSave * modelUse;
 }
+
+std::vector<float> DataProcessing::test(std::string oriPlyPath, std::string transMeshPlyPath, std::string transMeshPcdPath, std::string finalMeshPath) {
+	ply2ply(oriPlyPath, transMeshPlyPath);
+	ply2pcd(transMeshPlyPath, transMeshPcdPath);
+	getNormalVector(transMeshPcdPath);
+	pcl::PolygonMesh mesh;
+	pcl::io::loadPLYFile(transMeshPlyPath, mesh);
+	writePlyData(mesh);
+	loadMeshData(finalMeshPath.data());
+
+	for (int i = 0, meshLineMarker = 0; i < surfaceData.vecFaceTriangles.size() / 3; i++) {
+		if (i == 0) meshData.clear();
+		meshData.emplace_back(surfaceData.vecFaceTriangles[meshLineMarker]);
+		meshData.emplace_back(surfaceData.vecFaceTriangles[meshLineMarker + 1]);
+		meshData.emplace_back(surfaceData.vecFaceTriangles[meshLineMarker + 2]);
+		meshData.emplace_back(surfaceData.vecVertexNormals[meshLineMarker]);
+		meshData.emplace_back(surfaceData.vecVertexNormals[meshLineMarker + 1]);
+		meshData.emplace_back(surfaceData.vecVertexNormals[meshLineMarker + 2]);
+
+		meshLineMarker += 3;
+	}
+	return 	meshData;
+}
