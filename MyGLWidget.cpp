@@ -92,10 +92,10 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
     convertPoint(mousePosition);
     QPoint subPoint = mousePosition - pressPosition;
     if (event->buttons() & Qt::LeftButton) {
-        rotateModel(subPoint, model, modelUse, modelSave);
+        dataProc->rotateModel(subPoint, model, modelUse, modelSave);
     }
     if (event->buttons() & Qt::RightButton) {
-        translateModel(subPoint, model, modelUse, modelSave);
+        dataProc->translateModel(subPoint, model, modelUse, modelSave);
     }
     update();
 }
@@ -153,25 +153,7 @@ void MyGLWidget::convertPoint(QPoint& oriPos) {
     oriPos.setX(oriPos.x() - this->width() / 2);
     oriPos.setY(-(oriPos.y() - this->height() / 2));
 }
-void MyGLWidget::rotateModel(QPoint &point, QMatrix4x4 &model, QMatrix4x4 &modelUse, QMatrix4x4 &modelSave) {
-    model.setToIdentity();
-    GLfloat angleNow = qSqrt(qPow(point.x(), 2) + qPow(point.y(), 2)) / 5;
-    model.rotate(angleNow, -point.y(), point.x(), 0.0);
-    model = model * modelUse;
-    ;
-    modelSave.setToIdentity();
-    modelSave.rotate(angleNow, -point.y(), point.x(), 0.0);
-    modelSave = modelSave * modelUse;
-}
-void MyGLWidget::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave) {
-    model.setToIdentity();
-    model.translate((float)point.x() / 200, (float)point.y() / 200);
-    model = model * modelUse;
 
-    modelSave.setToIdentity();
-    modelSave.translate((float)point.x() / 200, (float)point.y() / 200);
-    modelSave = modelSave * modelUse;
-}
 // Convert screen coordinates to world coordinates
 QVector3D MyGLWidget::convertScreenToWorld(QPoint screenPoint) {
     int viewport[4];

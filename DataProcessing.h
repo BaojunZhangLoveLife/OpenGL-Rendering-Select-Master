@@ -1,5 +1,6 @@
 #pragma once
 #include <QVector3D>
+#include <QtMath>
 //PCL
 #include <pcl/PolygonMesh.h>
 #include <pcl/io/ply_io.h>
@@ -50,6 +51,8 @@ public:
 	std::vector<int> nearestKSearch(std::string txtPath, pcl::PointXYZ query_point);
 	// Find the nearest vertex of the world coordinate point
 	int findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices);
+	void translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
+	void rotateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
 	/// ----------------------------------------
 	/// Set of variables for processing data
 	/// ----------------------------------------
@@ -66,4 +69,5 @@ private:
 	QVector3D minCoordinate;
 
 	pcl::PointCloud<pcl::Normal>::Ptr normalsRefined;
+
 };
