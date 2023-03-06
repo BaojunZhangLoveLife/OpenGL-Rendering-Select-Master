@@ -70,7 +70,6 @@ void MyGLWidget::initializeGL(){
     QString qAppDir = QCoreApplication::applicationDirPath();
     QString meshVert = qAppDir + "/Shader/mesh.vert", meshFrag = qAppDir + "/Shader/mesh.frag";
     meshShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
-    //selectShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
 
     glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
     glFunc->glEnable(GL_DEPTH_TEST);
