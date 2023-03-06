@@ -35,7 +35,6 @@ public:
 	void txt2pcd(std::string filename, std::string pcdPath);
 
 	std::vector<int> nearestKSearch(std::string txtPath, pcl::PointXYZ query_point);
-	void meshConvert(std::string filename);
 	/// ----------------------------------------
 	/// Set of variables for processing data
 	/// ----------------------------------------
