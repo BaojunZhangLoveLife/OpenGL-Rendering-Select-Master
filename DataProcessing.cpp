@@ -24,9 +24,9 @@ DataProcessing::~DataProcessing() {
 }
 // clear mesh data
 void DataProcessing::clearMeshData(){
-	surfaceModelData.vecFaceTriangles.clear();
-	surfaceModelData.vecVertexNormals.clear();
-	surfaceModelData.vecPoints.clear();
+	surfaceData.vecFaceTriangles.clear();
+	surfaceData.vecVertexNormals.clear();
+	surfaceData.vecPoints.clear();
 }
 std::string DataProcessing::getProgramPath(){
 	QString qAppDir = QCoreApplication::applicationDirPath();
@@ -290,9 +290,9 @@ void DataProcessing::loadMeshData(char* filename){
 		}
 		normalize(pointData);
 		for (int i = 0; i < pointData.size(); i++){
-			surfaceModelData.vecPoints.emplace_back(pointData[i].x());
-			surfaceModelData.vecPoints.emplace_back(pointData[i].y());
-			surfaceModelData.vecPoints.emplace_back(pointData[i].z());
+			surfaceData.vecPoints.emplace_back(pointData[i].x());
+			surfaceData.vecPoints.emplace_back(pointData[i].y());
+			surfaceData.vecPoints.emplace_back(pointData[i].z());
 		}
 
 		// read faces
@@ -303,26 +303,26 @@ void DataProcessing::loadMeshData(char* filename){
 				buffer[0] = ' ';
 
 				sscanf(buffer, "%d %d %d", &vertex1, &vertex2, &vertex3);
-				surfaceModelData.vecFaceTriangles.emplace_back(surfaceModelData.vecPoints[3 * vertex1]);
-				surfaceModelData.vecFaceTriangles.emplace_back(surfaceModelData.vecPoints[3 * vertex1 + 1]);
-				surfaceModelData.vecFaceTriangles.emplace_back(surfaceModelData.vecPoints[3 * vertex1 + 2]);
-				surfaceModelData.vecFaceTriangles.emplace_back(surfaceModelData.vecPoints[3 * vertex2]);
-				surfaceModelData.vecFaceTriangles.emplace_back(surfaceModelData.vecPoints[3 * vertex2 + 1]);
-				surfaceModelData.vecFaceTriangles.emplace_back(surfaceModelData.vecPoints[3 * vertex2 + 2]);
-				surfaceModelData.vecFaceTriangles.emplace_back(surfaceModelData.vecPoints[3 * vertex3]);
-				surfaceModelData.vecFaceTriangles.emplace_back(surfaceModelData.vecPoints[3 * vertex3 + 1]);
-				surfaceModelData.vecFaceTriangles.emplace_back(surfaceModelData.vecPoints[3 * vertex3 + 2]);
+				surfaceData.vecFaceTriangles.emplace_back(surfaceData.vecPoints[3 * vertex1]);
+				surfaceData.vecFaceTriangles.emplace_back(surfaceData.vecPoints[3 * vertex1 + 1]);
+				surfaceData.vecFaceTriangles.emplace_back(surfaceData.vecPoints[3 * vertex1 + 2]);
+				surfaceData.vecFaceTriangles.emplace_back(surfaceData.vecPoints[3 * vertex2]);
+				surfaceData.vecFaceTriangles.emplace_back(surfaceData.vecPoints[3 * vertex2 + 1]);
+				surfaceData.vecFaceTriangles.emplace_back(surfaceData.vecPoints[3 * vertex2 + 2]);
+				surfaceData.vecFaceTriangles.emplace_back(surfaceData.vecPoints[3 * vertex3]);
+				surfaceData.vecFaceTriangles.emplace_back(surfaceData.vecPoints[3 * vertex3 + 1]);
+				surfaceData.vecFaceTriangles.emplace_back(surfaceData.vecPoints[3 * vertex3 + 2]);
 
 				// Normal
-				surfaceModelData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex1]);
-				surfaceModelData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex1 + 1]);
-				surfaceModelData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex1 + 2]);
-				surfaceModelData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex2]);
-				surfaceModelData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex2 + 1]);
-				surfaceModelData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex2 + 2]);
-				surfaceModelData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex3]);
-				surfaceModelData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex3 + 1]);
-				surfaceModelData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex3 + 2]);
+				surfaceData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex1]);
+				surfaceData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex1 + 1]);
+				surfaceData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex1 + 2]);
+				surfaceData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex2]);
+				surfaceData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex2 + 1]);
+				surfaceData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex2 + 2]);
+				surfaceData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex3]);
+				surfaceData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex3 + 1]);
+				surfaceData.vecVertexNormals.emplace_back(surfaceVertexNorm[3 * vertex3 + 2]);
 			}
 		}
 

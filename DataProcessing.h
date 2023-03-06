@@ -3,7 +3,7 @@
 #include <pcl/PolygonMesh.h>
 #include <pcl/io/ply_io.h>
 
-struct SurfaceModelData{
+struct SurfaceData{
 	std::vector<float> vecPoints;
 	std::vector<float> vecFaceTriangles;
 	std::vector<float> vecVertexNormals;
@@ -40,7 +40,7 @@ public:
 	/// ----------------------------------------
 	std::vector<QVector3D>		pointData;
 	std::vector<float>			meshData;
-	SurfaceModelData			surfaceModelData;
+	SurfaceData					surfaceData;
 
 private:
 	void clearMeshData();

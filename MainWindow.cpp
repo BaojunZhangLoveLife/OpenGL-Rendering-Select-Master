@@ -62,14 +62,14 @@ void MainWindow::startRendering(){
                     meshDataProc->writePlyData(mesh);
                     meshDataProc->loadMeshData(finalMeshPath.data());
 
-                    for (int i = 0, meshLineMarker = 0; i < meshDataProc->surfaceModelData.vecFaceTriangles.size() / 3; i++) {
+                    for (int i = 0, meshLineMarker = 0; i < meshDataProc->surfaceData.vecFaceTriangles.size() / 3; i++) {
                         if (i == 0) meshData.clear();
-                        meshData.emplace_back(meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker]);
-                        meshData.emplace_back(meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 1]);
-                        meshData.emplace_back(meshDataProc->surfaceModelData.vecFaceTriangles[meshLineMarker + 2]);
-                        meshData.emplace_back(meshDataProc->surfaceModelData.vecVertexNormals[meshLineMarker]);
-                        meshData.emplace_back(meshDataProc->surfaceModelData.vecVertexNormals[meshLineMarker + 1]);
-                        meshData.emplace_back(meshDataProc->surfaceModelData.vecVertexNormals[meshLineMarker + 2]);
+                        meshData.emplace_back(meshDataProc->surfaceData.vecFaceTriangles[meshLineMarker]);
+                        meshData.emplace_back(meshDataProc->surfaceData.vecFaceTriangles[meshLineMarker + 1]);
+                        meshData.emplace_back(meshDataProc->surfaceData.vecFaceTriangles[meshLineMarker + 2]);
+                        meshData.emplace_back(meshDataProc->surfaceData.vecVertexNormals[meshLineMarker]);
+                        meshData.emplace_back(meshDataProc->surfaceData.vecVertexNormals[meshLineMarker + 1]);
+                        meshData.emplace_back(meshDataProc->surfaceData.vecVertexNormals[meshLineMarker + 2]);
 
                         meshLineMarker += 3;
                     }
@@ -83,11 +83,11 @@ void MainWindow::startRendering(){
                 std::string pcdPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.pcd";
                 fs.open(txtPath,std::ios::app);
                 meshData3D.clear();
-                meshData3D.resize(meshDataProc->surfaceModelData.vecPoints.size() / 3);
-                for (int i = 0; i < meshDataProc->surfaceModelData.vecPoints.size() / 3 ; i++){
-                    meshData3D[i].setX(meshDataProc->surfaceModelData.vecPoints[i]);
-                    meshData3D[i].setY(meshDataProc->surfaceModelData.vecPoints[i + 1]);
-                    meshData3D[i].setZ(meshDataProc->surfaceModelData.vecPoints[i + 2]);
+                meshData3D.resize(meshDataProc->surfaceData.vecPoints.size() / 3);
+                for (int i = 0; i < meshDataProc->surfaceData.vecPoints.size() / 3 ; i++){
+                    meshData3D[i].setX(meshDataProc->surfaceData.vecPoints[i]);
+                    meshData3D[i].setY(meshDataProc->surfaceData.vecPoints[i + 1]);
+                    meshData3D[i].setZ(meshDataProc->surfaceData.vecPoints[i + 2]);
                     fs << meshData3D[i].x() << " " << meshData3D[i].y() << " " << meshData3D[i].z() << " " << std::endl;
                 }
                 fs.close();          
