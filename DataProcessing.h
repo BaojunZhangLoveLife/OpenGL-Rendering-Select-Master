@@ -1,7 +1,22 @@
 #pragma once
 #include <QVector3D>
+//PCL
 #include <pcl/PolygonMesh.h>
 #include <pcl/io/ply_io.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/point_types.h>
+#include <pcl/io/ply/ply.h>
+#include <pcl/filters/normal_refinement.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/features/normal_3d_omp.h>
+//VTK
+#include <vtkSTLReader.h>
+#include <vtkSTLWriter.h>
+#include <vtkPLYReader.h>
+#include <vtkPLYWriter.h>
+#include <vtkTriangleFilter.h>
 
 struct SurfaceData{
 	std::vector<float> vecPoints;

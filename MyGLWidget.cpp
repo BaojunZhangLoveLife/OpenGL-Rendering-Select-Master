@@ -7,7 +7,6 @@
 #include <sstream> 
 #include <DataProcessing.h>
 
-
 MyGLWidget::MyGLWidget(QWidget* parent){
     camera = new Camera();
     proj.setToIdentity();
