@@ -48,6 +48,8 @@ public:
 	void txt2pcd(std::string filename, std::string pcdPath);
 
 	std::vector<int> nearestKSearch(std::string txtPath, pcl::PointXYZ query_point);
+	// Find the nearest vertex of the world coordinate point
+	int findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices);
 	/// ----------------------------------------
 	/// Set of variables for processing data
 	/// ----------------------------------------

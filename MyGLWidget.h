@@ -53,8 +53,8 @@ protected:
     void setupShader();
     // Convert screen coordinates to world coordinates
     QVector3D convertScreenToWorld(QPoint point);
-    // Find the nearest vertex of the world coordinate point
-    int findNearestVertex(QVector3D worldPos);
+
+  
 private:
     ShaderProgram* meshShader;
     ShaderProgram* selectShader;

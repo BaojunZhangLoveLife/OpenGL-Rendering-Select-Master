@@ -355,3 +355,16 @@ void DataProcessing::getNormalVector(std::string pcdPath){
 	nr.setConvergenceThreshold(0.1);
 	nr.filter(*normalsRefined);
 }
+// Find the nearest vertex of the world coordinate point
+int DataProcessing::findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices) {
+	int nearestVertexIndex = -1;
+	float minDist = std::numeric_limits<float>::max();
+	for (int i = 0; i < meshVertices.size(); i++) {
+		float dist = (meshVertices[i] - worldPos).length();
+		if (dist < minDist) {
+			nearestVertexIndex = i;
+			minDist = dist;
+		}
+	}
+	return nearestVertexIndex;
+}

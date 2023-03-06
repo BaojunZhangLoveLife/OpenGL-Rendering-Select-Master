@@ -105,7 +105,7 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         std::ofstream fs;
         // Load point cloud from text file
         QVector3D worldPos  = convertScreenToWorld(event->pos());
-        int vertexIndex = findNearestVertex(worldPos);
+        int vertexIndex = dataProc->findNearestVertex(worldPos, meshVertices);
         if (vertexIndex != -1) {
             std::string pcdPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.pcd";
             pcl::PointXYZ query_point;
@@ -144,19 +144,7 @@ void MyGLWidget::keyReleaseEvent(QKeyEvent* event) {
         isShiftPressed = false;
 }
 
-// Find the nearest vertex of the world coordinate point
-int MyGLWidget::findNearestVertex(QVector3D worldPos) {
-    int nearestVertexIndex = -1;
-    float minDist = std::numeric_limits<float>::max();
-    for (int i = 0; i < meshVertices.size(); i++) {
-        float dist = (meshVertices[i] - worldPos).length();
-        if (dist < minDist) {
-            nearestVertexIndex = i;
-            minDist = dist;
-        }
-    }
-    return nearestVertexIndex;
-}
+
 void MyGLWidget::setPressPosition(QPoint pressPos) {
     convertPoint(pressPos);
     pressPosition = pressPos;
