@@ -27,7 +27,6 @@ public:
     void setImageData(std::vector<GLfloat> data);
     // Mesh vertices that saved
     std::vector<QVector3D> meshVertices;
-
     SurfaceReconsturction* surface;
 protected:
     void initializeGL()         override;

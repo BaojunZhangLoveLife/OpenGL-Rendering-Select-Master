@@ -80,6 +80,7 @@ void MyGLWidget::paintGL(){
     glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glFunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     setupShader();
+    std::cout << "hello " << std::endl;
     drawMesh();
 }
 void MyGLWidget::resizeGL(int width, int height){
@@ -117,8 +118,33 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
                 meshVertices.erase(meshVertices.begin() + *it);
             }
             surface->construction(meshVertices);
+
+            std::string oriPlyPath = "C:/Project/OpenGL-Rendering-Master-Build/result.ply";
+            std::string transMeshPlyPath = "C:/Project/OpenGL-Rendering-Master-Build/transMesh.ply";
+            std::string transMeshPcdPath = "C:/Project/OpenGL-Rendering-Master-Build/transMesh.pcd";
+            std::string finalMeshPath = "C:/Project/OpenGL-Rendering-Master-Build/finalMesh.ply";
+
+            dataProc->ply2ply(oriPlyPath, transMeshPlyPath);
+            dataProc->ply2pcd(transMeshPlyPath, transMeshPcdPath);
+            dataProc->getNormalVector(transMeshPcdPath);
+            pcl::PolygonMesh mesh;
+            pcl::io::loadPLYFile(transMeshPlyPath, mesh);
+            dataProc->writePlyData(mesh);
+            dataProc->loadMeshData(finalMeshPath.data());
+
+            for (int i = 0, meshLineMarker = 0; i < dataProc->surfaceData.vecFaceTriangles.size() / 3; i++) {
+                if (i == 0) vertices.clear();
+                vertices.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker]);
+                vertices.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker + 1]);
+                vertices.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker + 2]);
+                vertices.emplace_back(dataProc->surfaceData.vecVertexNormals[meshLineMarker]);
+                vertices.emplace_back(dataProc->surfaceData.vecVertexNormals[meshLineMarker + 1]);
+                vertices.emplace_back(dataProc->surfaceData.vecVertexNormals[meshLineMarker + 2]);
+
+                meshLineMarker += 3;
+            }
         }
-        update();
+        paintGL();
     }else{
         setPressPosition(event->pos());
         modelUse = modelSave;
