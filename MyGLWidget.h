@@ -13,6 +13,7 @@
 #include <gl/GLU.h>
 #include <fstream>
 #include <DataProcessing.h>
+#include <surfacereconsturction.h>
 enum DataType{
     PointType,
     MeshType
@@ -26,6 +27,8 @@ public:
     void setImageData(std::vector<GLfloat> data);
     // Mesh vertices that saved
     std::vector<QVector3D> meshVertices;
+
+    SurfaceReconsturction* surface;
 protected:
     void initializeGL()         override;
     void paintGL()              override;

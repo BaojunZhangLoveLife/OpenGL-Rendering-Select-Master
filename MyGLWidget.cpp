@@ -14,6 +14,7 @@ MyGLWidget::MyGLWidget(QWidget* parent){
     proj.perspective(45.0f, width() / height(), 0.1f, 200.f);
     this->grabKeyboard();
     dataProc = new DataProcessing();
+    surface = new SurfaceReconsturction();
 }
 
 MyGLWidget::~MyGLWidget(){
@@ -113,12 +114,13 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             query_point.y = meshVertices[vertexIndex].y();
             query_point.z = meshVertices[vertexIndex].z();
             
-            dataProc->nearestKSearch(pcdPath, query_point);
+            std::vector<int> index = dataProc->nearestKSearch(pcdPath, query_point);
+            for (auto it = index.rbegin(); it != index.rend(); it++){
+                meshVertices.erase(meshVertices.begin() + *it);
+            }
+            surface->construction(meshVertices);
         }
-
-
-
-       /* update();*/
+        update();
     }else{
         setPressPosition(event->pos());
         modelUse = modelSave;

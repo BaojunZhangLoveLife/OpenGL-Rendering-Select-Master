@@ -8,11 +8,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Enable C++17
 set(CMAKE_CXX_STANDARD 17)
 
-# Open3D
-find_package(Open3D)
-include_directories(${Open3D_INCLUDE_DIRS})
-link_directories(${Open3D_LIBRARY_DIRS})
-add_definitions(${Open3D_DEFINITIONS})
 
 # Surface
 if(NOT SURFACE_ROOT)
@@ -73,7 +68,6 @@ source_group("Shader" FILES ${SHADER_FILES})
 add_executable(${PROJECT_NAME} ${SRC_FILES} ${HEAD_FILES} ${QRC_FILES} ${WRAP_FILES} ${SHADER_FILES})
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL Qt5::OpenGLExtensions)
-target_link_libraries(${PROJECT_NAME} ${Open3D_LIBRARIES})
 target_link_libraries (${PROJECT_NAME} ${PCL_LIBRARIES})
 target_link_libraries (${PROJECT_NAME} ${SURFACE_LIB_FILES})
 target_link_libraries (${PROJECT_NAME} ${GLUT_LIB_FILES})

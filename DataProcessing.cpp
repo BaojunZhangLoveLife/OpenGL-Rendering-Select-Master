@@ -149,11 +149,10 @@ void DataProcessing::ply2pcd(std::string ply, std::string pcd){
 	pcl::io::loadPLYFile<pcl::PointXYZ>(ply, *cloud);
 	pcl::io::savePCDFile(pcd, *cloud);
 }
-void DataProcessing::nearestKSearch(std::string txtPath, pcl::PointXYZ query_point) {
+std::vector<int> DataProcessing::nearestKSearch(std::string pcdPath, pcl::PointXYZ query_point) {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-	if (pcl::io::loadPCDFile<pcl::PointXYZ>(txtPath, *cloud) == -1){
+	if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcdPath, *cloud) == -1){
 		PCL_ERROR("Couldn't read file.\n");
-		return;
 	}
 	pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtree(new pcl::KdTreeFLANN<pcl::PointXYZ>);
 	kdtree->setInputCloud(cloud);
@@ -161,11 +160,7 @@ void DataProcessing::nearestKSearch(std::string txtPath, pcl::PointXYZ query_poi
 	std::vector<float> k_distances;
 	int k = 10; 
 	kdtree->nearestKSearch(query_point, k, k_indices, k_distances);
-
-	for (int i = 0; i < k_indices.size(); ++i){
-		pcl::PointXYZ& nearest_point = cloud->points[k_indices[i]];
-		std::cout << "Nearest neighbor " << i << ": (" << nearest_point.x << ", " << nearest_point.y << ", " << nearest_point.z << ") " << "distance=" << k_distances[i] << std::endl;
-	}
+	return k_indices;
 }
 void DataProcessing::stl2ply(std::string stl, std::string ply){
 	std::string filename = stl;
