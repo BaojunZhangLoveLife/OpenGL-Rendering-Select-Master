@@ -80,7 +80,6 @@ void MyGLWidget::paintGL(){
     glFunc->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glFunc->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     setupShader();
-    std::cout << "hello " << std::endl;
     drawMesh();
 }
 void MyGLWidget::resizeGL(int width, int height){
@@ -108,7 +107,13 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
         int vertexIndex = dataProc->findNearestVertex(worldPos, meshVertices);
         if (vertexIndex != -1) {
             std::string basePath = "C:/Project/OpenGL-Rendering-Master-Build/";
+
             std::string pcdPath = basePath + "/gl_PointCloud.pcd";
+            std::string oriPlyPath = basePath + "result.ply";
+            std::string transMeshPlyPath = basePath + "transMesh.ply";
+            std::string transMeshPcdPath = basePath + "transMesh.pcd";
+            std::string finalMeshPath = basePath + "finalMesh.ply";
+
             pcl::PointXYZ query_point;
             query_point.x = meshVertices[vertexIndex].x();
             query_point.y = meshVertices[vertexIndex].y();
@@ -119,16 +124,8 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
                 meshVertices.erase(meshVertices.begin() + *it);
             }
             surface->construction(meshVertices);
-
-
-            std::string oriPlyPath = basePath + "result.ply";
-            std::string transMeshPlyPath = basePath + "transMesh.ply";
-            std::string transMeshPcdPath = basePath + "transMesh.pcd";
-            std::string finalMeshPath = basePath + "finalMesh.ply";
-
+ 
             vertices = dataProc->test(oriPlyPath, transMeshPlyPath, transMeshPcdPath, finalMeshPath);
-
-           
         }
         paintGL();
     }else{
