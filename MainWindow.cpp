@@ -81,7 +81,7 @@ void MainWindow::startRendering(){
                 std::fstream fs;
                 std::string txtPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.txt";
                 std::string pcdPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.pcd";
-                fs.open(txtPath,std::ios::app);
+                fs.open(txtPath,'w');
                 meshData3D.clear();
                 meshData3D.resize(meshDataProc->surfaceData.vecPoints.size() / 3);
                 for (int i = 0; i < meshDataProc->surfaceData.vecPoints.size() / 3 ; i++){
