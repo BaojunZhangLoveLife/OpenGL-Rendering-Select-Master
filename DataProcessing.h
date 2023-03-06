@@ -30,8 +30,6 @@ public:
 	void writePlyData(pcl::PolygonMesh mesh);
 	void ply2ply(std::string src, std::string dst);
 	void ply2pcd(std::string ply, std::string pcd);
-	void stl2ply(std::string stl, std::string ply);
-	void ply2stl(std::string ply, std::string stl);
 	void txt2pcd(std::string filename, std::string pcdPath);
 
 	std::vector<int> nearestKSearch(std::string txtPath, pcl::PointXYZ query_point);

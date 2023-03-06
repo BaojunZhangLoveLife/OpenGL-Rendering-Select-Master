@@ -162,35 +162,6 @@ std::vector<int> DataProcessing::nearestKSearch(std::string pcdPath, pcl::PointX
 	kdtree->nearestKSearch(query_point, k, k_indices, k_distances);
 	return k_indices;
 }
-void DataProcessing::stl2ply(std::string stl, std::string ply){
-	std::string filename = stl;
-	vtkSmartPointer<vtkSTLReader> reader = vtkSmartPointer<vtkSTLReader>::New();
-	reader->SetFileName(filename.c_str());
-	reader->Update();
-
-	vtkSmartPointer<vtkPLYWriter> plyWriter = vtkSmartPointer<vtkPLYWriter>::New();
-	plyWriter->SetFileName(ply.c_str());
-	plyWriter->SetInputConnection(reader->GetOutputPort());
-	plyWriter->SetFileTypeToASCII();
-	plyWriter->SetColorModeToOff();
-
-	plyWriter->Update();
-	plyWriter->Write();
-}
-void DataProcessing::ply2stl(std::string ply, std::string stl){
-	vtkSmartPointer<vtkPLYReader> reader = vtkSmartPointer<vtkPLYReader>::New();
-	reader->SetFileName(ply.c_str());
-	reader->Update();
-
-	vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
-	polyData = reader->GetOutput();
-	polyData->GetNumberOfPoints();
-
-	vtkSmartPointer<vtkSTLWriter> writer = vtkSmartPointer<vtkSTLWriter>::New();
-	writer->SetInputData(polyData);
-	writer->SetFileName(stl.c_str());
-	writer->Write();
-}
 
 //Data Type Conversion(transfer mesh object to a ply file)
 void DataProcessing::writePlyData(pcl::PolygonMesh mesh){
