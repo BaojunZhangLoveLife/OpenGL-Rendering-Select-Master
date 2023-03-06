@@ -45,8 +45,8 @@ protected:
     void setPressPosition(QPoint p_ab);
     void convertPoint(QPoint& p_ab);
     // 
-    void rotateModel(QPoint point);
-    void translateModel(QPoint point);
+    void rotateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
+    void translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
     // Draw Mesh Image
     void drawMesh();
     // Setup shader
