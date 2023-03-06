@@ -62,7 +62,7 @@ private:
     QMatrix4x4 proj;
 
     QOpenGLFunctions_4_5_Core* glFunc;
-    std::vector<GLfloat> vertices;
+    std::vector<float> vertices;
 
     QPoint pressPosition; 
     GLuint meshVAO, meshVBO;

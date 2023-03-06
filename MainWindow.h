@@ -26,7 +26,7 @@ private:
 	SurfaceReconsturction* surface;
 	DataProcessing* meshDataProc;
 
-	std::vector<GLfloat> meshData;
+	std::vector<float> meshData;
 	std::vector<QVector3D>	meshData3D;
 	std::vector<QVector3D> originalPointData;
 	std::vector<QVector3D>	pointData3D;

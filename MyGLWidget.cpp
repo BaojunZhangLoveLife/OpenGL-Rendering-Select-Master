@@ -23,7 +23,7 @@ MyGLWidget::~MyGLWidget(){
     glFunc->glDeleteBuffers(1, &meshVBO);
 }
 
-void MyGLWidget::setImageData(std::vector<GLfloat> data){
+void MyGLWidget::setImageData(std::vector<float> data){
     vertices = data;
 }
 
