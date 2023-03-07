@@ -42,7 +42,13 @@ void MainWindow::startRendering(){
     auto collectDataFunc = [=]() {
         int pointLine = 0;
         while (pointLine < pointData3D.size()){
-            originalPointData.emplace_back(QVector3D{ pointData3D[pointLine].x(), pointData3D[pointLine].y(), pointData3D[pointLine].z() });
+            originalPointData.emplace_back(
+                QVector3D{
+                    pointData3D[pointLine].x(), 
+                    pointData3D[pointLine].y(), 
+                    pointData3D[pointLine].z() 
+                }
+            );
             pointLine++;
             if ((originalPointData.size() >= MIN_POINTS_SIZE_REQUIRED)) {
                 if (((pointLine % MESH_INCREASE_SIZE) == 0) || (pointLine >= pointData3D.size())) {
