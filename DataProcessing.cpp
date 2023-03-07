@@ -389,11 +389,10 @@ void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4
 }
 
 std::vector<float> DataProcessing::test(
-									std::string oriPlyPath,
-									std::string transMeshPlyPath,
-									std::string transMeshPcdPath, 
-									std::string finalMeshPath) 
-{
+						std::string oriPlyPath,
+						std::string transMeshPlyPath,
+						std::string transMeshPcdPath, 
+						std::string finalMeshPath) {
 	ply2ply(oriPlyPath, transMeshPlyPath);
 	ply2pcd(transMeshPlyPath, transMeshPcdPath);
 	getNormalVector(transMeshPcdPath);
