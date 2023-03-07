@@ -55,9 +55,7 @@ void MainWindow::startRendering(){
             }
             if (pointLine >= pointData3D.size()){
                 std::fstream fs;
-                std::string gl_PointCloudTxtPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.txt";
-                std::string gl_PointCloudPcdPath = "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.pcd";
-                fs.open(gl_PointCloudTxtPath,'w');
+                fs.open(GL_POINTCLOUD_TXT_PATH,'w');
                 meshData3D.clear();
                 meshData3D.resize(meshDataProc->surfaceData.vecPoints.size() / 3);
                 for (int i = 0; i < meshDataProc->surfaceData.vecPoints.size() / 3 ; i++){
@@ -67,7 +65,7 @@ void MainWindow::startRendering(){
                     fs << meshData3D[i].x() << " " << meshData3D[i].y() << " " << meshData3D[i].z() << " " << std::endl;
                 }
                 fs.close();          
-                meshDataProc->txt2pcd(gl_PointCloudTxtPath, gl_PointCloudPcdPath);
+                meshDataProc->txt2pcd(GL_POINTCLOUD_TXT_PATH, GL_POINTCLOUD_PCD_PATH);
 
                 myMeshGLWidget->meshVertices.clear();
                 myMeshGLWidget->meshVertices.resize(meshData3D.size());

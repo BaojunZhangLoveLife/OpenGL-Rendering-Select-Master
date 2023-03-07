@@ -11,6 +11,10 @@
 
 
 #define ORIGINAL_DATA "C:/Project/OpenGL-Rendering-Master-Build/originalData.txt"
+
+#define GL_POINTCLOUD_TXT_PATH  "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.txt"
+#define GL_POINTCLOUD_PCD_PATH  "C:/Project/OpenGL-Rendering-Master-Build/gl_PointCloud.pcd"
+
 #define ORI_PLY_PATH "C:/Project/OpenGL-Rendering-Master-Build/result.ply"
 #define TRANS_MESH_PLY_PATH  "C:/Project/OpenGL-Rendering-Master-Build/transMesh.ply"
 #define TRANS_MESH_PCD_PATH  "C:/Project/OpenGL-Rendering-Master-Build/transMesh.pcd"
