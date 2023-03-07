@@ -406,6 +406,7 @@ std::vector<float> DataProcessing::getSurfaceData(
 		meshData.emplace_back(surfaceData.vecFaceTriangles[meshLineMarker]);
 		meshData.emplace_back(surfaceData.vecFaceTriangles[meshLineMarker + 1]);
 		meshData.emplace_back(surfaceData.vecFaceTriangles[meshLineMarker + 2]);
+		
 		meshData.emplace_back(surfaceData.vecVertexNormals[meshLineMarker]);
 		meshData.emplace_back(surfaceData.vecVertexNormals[meshLineMarker + 1]);
 		meshData.emplace_back(surfaceData.vecVertexNormals[meshLineMarker + 2]);
