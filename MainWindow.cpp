@@ -62,7 +62,7 @@ void MainWindow::startRendering(){
                 std::fstream fs;
                 fs.open(GL_POINTCLOUD_TXT_PATH,std::ios::trunc);
                 meshData3D.resize(meshDataProc->surfaceData.vecPoints.size() / 3);
-                for (int i = 0; i < meshDataProc->surfaceData.vecPoints.size() / 3 ; i++){
+                for (int i = 0; i < meshData3D.size(); i++){
                     meshData3D[i].setX(meshDataProc->surfaceData.vecPoints[i]);
                     meshData3D[i].setY(meshDataProc->surfaceData.vecPoints[i + 1]);
                     meshData3D[i].setZ(meshDataProc->surfaceData.vecPoints[i + 2]);
