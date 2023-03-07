@@ -415,3 +415,39 @@ std::vector<float> DataProcessing::getSurfaceData(
 	}
 	return 	meshData;
 }
+
+void test() {
+	pcl::PolygonMesh mesh;
+	std::vector<int> verticesToDelete = { 1,2,3 };
+	std::vector<int> polygonsToDelete;
+	for (int i = 0; i < mesh.polygons.size(); i++) {
+		const pcl::Vertices& polygon = mesh.polygons[i];
+		bool deletePolygon = true;
+		for (int j = 0; j < verticesToDelete.size(); j++) {
+			if (std::find(polygon.vertices.begin(), polygon.vertices.end(), verticesToDelete[j]) == polygon.vertices.end()) {
+				deletePolygon = false;
+				break;
+			}
+		}
+		if (deletePolygon) {
+			polygonsToDelete.push_back(i);
+		}
+	}
+	// Delete polygons containing the vertices to delete
+	for (int i = 0; i < polygonsToDelete.size(); ++i) {
+		int polygonIndex = polygonsToDelete[i];
+		const pcl::Vertices& polygon = mesh.polygons[polygonIndex];
+
+		// Remove references to this polygon from other polygons
+		for (int j = 0; j < mesh.polygons.size(); ++j) {
+			if (j != polygonIndex) {
+				pcl::Vertices& otherPolygon = mesh.polygons[j];
+				auto it = std::find(otherPolygon.vertices.begin(), otherPolygon.vertices.end(), polygon.vertices[0]);
+				if (it != otherPolygon.vertices.end()) {
+					otherPolygon.vertices.erase(it);
+				}
+			}
+		}
+		mesh.polygons.erase(mesh.polygons.begin() + polygonIndex);
+	}
+}
