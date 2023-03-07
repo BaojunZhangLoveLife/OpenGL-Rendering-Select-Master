@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream> 
 #include <DataProcessing.h>
+#include <Macro.h>
 
 MyGLWidget::MyGLWidget(QWidget* parent){
     camera = new Camera();
@@ -101,31 +102,20 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
 
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
     if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
-        std::ofstream fs;
-        // Load point cloud from text file
         QVector3D worldPos  = convertScreenToWorld(event->pos());
         int vertexIndex = dataProc->findNearestVertex(worldPos, meshVertices);
         if (vertexIndex != -1) {
-            std::string basePath = "C:/Project/OpenGL-Rendering-Master-Build/";
-
-            std::string pcdPath = basePath + "/gl_PointCloud.pcd";
-            std::string oriPlyPath = basePath + "result.ply";
-            std::string transMeshPlyPath = basePath + "transMesh.ply";
-            std::string transMeshPcdPath = basePath + "transMesh.pcd";
-            std::string finalMeshPath = basePath + "finalMesh.ply";
-
             pcl::PointXYZ query_point;
             query_point.x = meshVertices[vertexIndex].x();
             query_point.y = meshVertices[vertexIndex].y();
             query_point.z = meshVertices[vertexIndex].z();
             
-            std::vector<int> index = dataProc->nearestKSearch(pcdPath, query_point);
+            std::vector<int> index = dataProc->nearestKSearch(TRANS_MESH_PCD_PATH, query_point);
             for (auto it = index.rbegin(); it != index.rend(); it++){
                 meshVertices.erase(meshVertices.begin() + *it);
             }
             surface->construction(meshVertices);
- 
-            vertices = dataProc->test(oriPlyPath, transMeshPlyPath, transMeshPcdPath, finalMeshPath);
+            vertices = dataProc->getSurfaceData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
         }
         paintGL();
     }else{
