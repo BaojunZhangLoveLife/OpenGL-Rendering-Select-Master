@@ -47,7 +47,12 @@ void MainWindow::startRendering(){
             if ((originalPointData.size() >= MIN_POINTS_SIZE_REQUIRED)) {
                 if (((pointLine % MESH_INCREASE_SIZE) == 0) || (pointLine >= pointData3D.size())) {
                     surface->construction(originalPointData);
-                    meshData = meshDataProc->getSurfaceData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
+                    meshData = meshDataProc->getSurfaceData(
+                                                ORI_PLY_PATH,
+                                                TRANS_MESH_PLY_PATH,
+                                                TRANS_MESH_PCD_PATH,
+                                                FINAL_MESH_PASH
+                                                );
                     
                     myMeshGLWidget->setImageData(meshData);
                     emit signal_glUpdate();
@@ -56,7 +61,6 @@ void MainWindow::startRendering(){
             if (pointLine >= pointData3D.size()){
                 std::fstream fs;
                 fs.open(GL_POINTCLOUD_TXT_PATH,'w');
-                meshData3D.clear();
                 meshData3D.resize(meshDataProc->surfaceData.vecPoints.size() / 3);
                 for (int i = 0; i < meshDataProc->surfaceData.vecPoints.size() / 3 ; i++){
                     meshData3D[i].setX(meshDataProc->surfaceData.vecPoints[i]);
@@ -66,8 +70,6 @@ void MainWindow::startRendering(){
                 }
                 fs.close();          
                 meshDataProc->txt2pcd(GL_POINTCLOUD_TXT_PATH, GL_POINTCLOUD_PCD_PATH);
-
-                myMeshGLWidget->meshVertices.clear();
                 myMeshGLWidget->meshVertices.resize(meshData3D.size());
                 myMeshGLWidget->meshVertices = meshData3D;
             }
