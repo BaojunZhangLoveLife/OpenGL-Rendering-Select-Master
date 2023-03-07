@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent){
     surface = new SurfaceReconsturction();
     isOpenGLThreadStart = true;
     addOpengGLWidget();
-  
+
     connect(ui.startPushBtn, SIGNAL(clicked()), this, SLOT(startRendering()));
     connect(this, SIGNAL(signal_glUpdate()), this, SLOT(gLWidgetUpdate()));
 }
@@ -65,6 +65,11 @@ void MainWindow::startRendering(){
                 }
             }
             if (pointLine >= pointData3D.size()){
+
+
+                pcl::PolygonMesh mesh;
+                pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
+
                 std::fstream fs;
                 fs.open(GL_POINTCLOUD_TXT_PATH,std::ios::trunc);
                 meshData3D.resize(meshDataProc->surfaceData.vecPoints.size() / 3);

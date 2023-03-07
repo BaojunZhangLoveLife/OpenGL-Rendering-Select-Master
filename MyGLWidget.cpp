@@ -108,6 +108,7 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             query_point.z = meshVertices[vertexIndex].z();
             
             std::vector<int> toRemove = dataProc->nearestKSearch(TRANS_MESH_PCD_PATH, query_point);
+
             for (auto it = toRemove.rbegin(); it != toRemove.rend(); it++){
                 meshVertices.erase(meshVertices.begin() + *it);
             }
