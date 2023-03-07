@@ -53,17 +53,18 @@ public:
 	int findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices);
 	void translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
 	void rotateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
+	std::vector<float> getSurfaceData(
+		std::string oriPlyPath,
+		std::string transMeshPlyPath,
+		std::string transMeshPcdPath,
+		std::string finalMeshPath);
 	/// ----------------------------------------
 	/// Set of variables for processing data
 	/// ----------------------------------------
 	std::vector<QVector3D>		pointData;
 	std::vector<float>			meshData;
 	SurfaceData					surfaceData;
-	std::vector<float> test(
-		std::string oriPlyPath, 
-		std::string transMeshPlyPath,
-		std::string transMeshPcdPath,
-		std::string finalMeshPath);
+
 private:
 	void clearMeshData();
 	void getXYZMaxMin();

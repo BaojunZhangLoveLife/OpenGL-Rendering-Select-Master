@@ -388,7 +388,7 @@ void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4
 	modelSave = modelSave * modelUse;
 }
 
-std::vector<float> DataProcessing::test(
+std::vector<float> DataProcessing::getSurfaceData(
 						std::string oriPlyPath,
 						std::string transMeshPlyPath,
 						std::string transMeshPcdPath, 
