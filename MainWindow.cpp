@@ -60,7 +60,7 @@ void MainWindow::startRendering(){
             }
             if (pointLine >= pointData3D.size()){
                 std::fstream fs;
-                fs.open(GL_POINTCLOUD_TXT_PATH,'w');
+                fs.open(GL_POINTCLOUD_TXT_PATH,std::ios::trunc);
                 meshData3D.resize(meshDataProc->surfaceData.vecPoints.size() / 3);
                 for (int i = 0; i < meshDataProc->surfaceData.vecPoints.size() / 3 ; i++){
                     meshData3D[i].setX(meshDataProc->surfaceData.vecPoints[i]);
