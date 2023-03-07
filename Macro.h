@@ -9,6 +9,8 @@
 #define MESH_INCREASE_SIZE			4000
 #define MIN_POINTS_SIZE_REQUIRED    40
 
+#define MESH_VERT	"C:/Project/OpenGL-Rendering-Select-Master/Shader/mesh.vert"
+#define MESH_FRAG  "C:/Project/OpenGL-Rendering-Select-Master/Shader/mesh.frag"
 
 #define ORIGINAL_DATA "C:/Project/OpenGL-Rendering-Master-Build/originalData.txt"
 

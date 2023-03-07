@@ -68,10 +68,7 @@ void MyGLWidget::drawMesh() {
 }
 // initialize OpenGL
 void MyGLWidget::initializeGL(){
-    QString qAppDir = QCoreApplication::applicationDirPath();
-    QString meshVert = qAppDir + "/Shader/mesh.vert", meshFrag = qAppDir + "/Shader/mesh.frag";
-    meshShader = new ShaderProgram(meshVert.toStdString().c_str(), meshFrag.toStdString().c_str());
-
+    meshShader = new ShaderProgram(MESH_VERT, MESH_FRAG);
     glFunc = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
     glFunc->glEnable(GL_DEPTH_TEST);
     glFunc->glEnable(GL_SELECT);
@@ -167,6 +164,16 @@ QVector3D MyGLWidget::convertScreenToWorld(QPoint screenPoint) {
         }
     }
     double worldX, worldY, worldZ;
-    gluUnProject(screenPoint.x(), height() - screenPoint.y(), 0, modelViewMatrix, projectionMatrix, viewport, &worldX, &worldY, &worldZ);
+    gluUnProject(
+        screenPoint.x(), 
+        height() - screenPoint.y(),
+        0, 
+        modelViewMatrix, 
+        projectionMatrix, 
+        viewport,
+        &worldX,
+        &worldY,
+        &worldZ
+    );
     return QVector3D(worldX, worldY, worldZ);
 }
