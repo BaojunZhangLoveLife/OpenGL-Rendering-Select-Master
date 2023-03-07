@@ -107,11 +107,12 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             query_point.y = meshVertices[vertexIndex].y();
             query_point.z = meshVertices[vertexIndex].z();
             
-            std::vector<int> index = dataProc->nearestKSearch(TRANS_MESH_PCD_PATH, query_point);
-            for (auto it = index.rbegin(); it != index.rend(); it++){
+            std::vector<int> toRemove = dataProc->nearestKSearch(TRANS_MESH_PCD_PATH, query_point);
+            for (auto it = toRemove.rbegin(); it != toRemove.rend(); it++){
                 meshVertices.erase(meshVertices.begin() + *it);
             }
-            surface->construction(meshVertices);
+
+            //surface->construction(meshVertices);
             vertices = dataProc->getSurfaceData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
         }
         paintGL();
