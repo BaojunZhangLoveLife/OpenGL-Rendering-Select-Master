@@ -106,15 +106,19 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             query_point.x = meshVertices[vertexIndex].x();
             query_point.y = meshVertices[vertexIndex].y();
             query_point.z = meshVertices[vertexIndex].z();
-            
-            std::vector<int> toRemove = dataProc->nearestKSearch(TRANS_MESH_PCD_PATH, query_point);
+            pcl::PolygonMesh mesh;
+            pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
 
-            for (auto it = toRemove.rbegin(); it != toRemove.rend(); it++){
-                meshVertices.erase(meshVertices.begin() + *it);
-            }
+            std::vector<int> toRemove = dataProc->nearestKSearch(mesh, query_point);
+            pcl::io::savePLYFile("C:/Project/OpenGL-Rendering-Master-Build/result111.ply", dataProc->eraseMesh(mesh, toRemove));
+            dataProc->loadMeshData(FINAL_MESH_PASH);
 
-            surface->construction(meshVertices);
-            vertices = dataProc->getSurfaceData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
+            //for (auto it = toRemove.rbegin(); it != toRemove.rend(); it++){
+            //    meshVertices.erase(meshVertices.begin() + *it);
+            //}
+
+            //surface->construction(meshVertices);
+            //vertices = dataProc->getSurfaceData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
         }
         paintGL();
     }else{

@@ -48,9 +48,10 @@ public:
 	void ply2pcd(std::string ply, std::string pcd);
 	void txt2pcd(std::string filename, std::string pcdPath);
 
-	std::vector<int> nearestKSearch(std::string txtPath, pcl::PointXYZ query_point);
+	std::vector<int> nearestKSearch(pcl::PolygonMesh mesh, pcl::PointXYZ query_point);
 	// Find the nearest vertex of the world coordinate point
 	int findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices);
+	std::vector<QVector3D> convertPolygonMeshToQVector3D(const pcl::PolygonMesh& mesh);
 	void translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
 	void rotateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
 	std::vector<float> getSurfaceData(
@@ -58,6 +59,7 @@ public:
 		std::string transMeshPlyPath,
 		std::string transMeshPcdPath,
 		std::string finalMeshPath);
+	pcl::PolygonMesh eraseMesh(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete);
 	/// ----------------------------------------
 	/// Set of variables for processing data
 	/// ----------------------------------------

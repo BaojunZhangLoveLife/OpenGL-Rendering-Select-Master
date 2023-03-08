@@ -137,17 +137,15 @@ void DataProcessing::ply2pcd(std::string ply, std::string pcd){
 	pcl::io::loadPLYFile<pcl::PointXYZ>(ply, *cloud);
 	pcl::io::savePCDFile(pcd, *cloud);
 }
-std::vector<int> DataProcessing::nearestKSearch(std::string pcdPath, pcl::PointXYZ query_point) {
+std::vector<int> DataProcessing::nearestKSearch(pcl::PolygonMesh mesh, pcl::PointXYZ query_point) {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-	if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcdPath, *cloud) == -1){
-		PCL_ERROR("Couldn't read file.\n");
-	}
+	pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
+
 	pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtree(new pcl::KdTreeFLANN<pcl::PointXYZ>);
 	kdtree->setInputCloud(cloud);
 	std::vector<int> k_indices;
 	std::vector<float> k_distances;
-	int k = 10; 
-	kdtree->nearestKSearch(query_point, k, k_indices, k_distances);
+	kdtree->nearestKSearch(query_point, 10, k_indices, k_distances);
 	return k_indices;
 }
 
@@ -416,7 +414,7 @@ std::vector<float> DataProcessing::getSurfaceData(
 	return 	meshData;
 }
 
-pcl::PolygonMesh test(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete) {
+pcl::PolygonMesh DataProcessing::eraseMesh(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete) {
 	std::vector<int> polygonsToDelete;
 	for (int i = 0; i < mesh.polygons.size(); i++) {
 		const pcl::Vertices& polygon = mesh.polygons[i];
@@ -449,4 +447,19 @@ pcl::PolygonMesh test(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete) 
 		mesh.polygons.erase(mesh.polygons.begin() + polygonIndex);
 	}
 	return mesh;
+}
+std::vector<QVector3D> DataProcessing::convertPolygonMeshToQVector3D(const pcl::PolygonMesh& mesh) {
+	std::vector<QVector3D> vertices;
+
+	// Get the point cloud from the mesh
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
+
+	// Convert each point to a QVector3D
+	for (const auto& point : cloud->points) {
+		QVector3D vertex(point.x, point.y, point.z);
+		vertices.push_back(vertex);
+	}
+
+	return vertices;
 }

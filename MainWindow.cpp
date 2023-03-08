@@ -66,7 +66,9 @@ void MainWindow::startRendering(){
                 pcl::PolygonMesh mesh;
                 pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
                
-                std::fstream fs;
+                myMeshGLWidget->meshVertices = meshDataProc->convertPolygonMeshToQVector3D(mesh);
+
+               /* std::fstream fs;
                 fs.open(GL_POINTCLOUD_TXT_PATH,std::ios::trunc);
                 meshData3D.resize(meshDataProc->surfaceData.vecPoints.size() / 3);
        
@@ -80,7 +82,7 @@ void MainWindow::startRendering(){
                 fs.close();          
                 meshDataProc->txt2pcd(GL_POINTCLOUD_TXT_PATH, GL_POINTCLOUD_PCD_PATH);
                 myMeshGLWidget->meshVertices.resize(meshData3D.size());
-                myMeshGLWidget->meshVertices = meshData3D;
+                myMeshGLWidget->meshVertices = meshData3D;*/
             }
         }
     };
