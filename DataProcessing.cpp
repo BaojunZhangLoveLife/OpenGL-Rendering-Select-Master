@@ -389,10 +389,10 @@ void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4
 }
 
 std::vector<float> DataProcessing::getSurfaceData(
-						std::string oriPlyPath,
-						std::string transMeshPlyPath,
-						std::string transMeshPcdPath, 
-						std::string finalMeshPath) {
+								std::string oriPlyPath,
+								std::string transMeshPlyPath,
+								std::string transMeshPcdPath, 
+								std::string finalMeshPath) {
 	ply2ply(oriPlyPath, transMeshPlyPath);
 	ply2pcd(transMeshPlyPath, transMeshPcdPath);
 	getNormalVector(transMeshPcdPath);
@@ -416,9 +416,7 @@ std::vector<float> DataProcessing::getSurfaceData(
 	return 	meshData;
 }
 
-void test() {
-	pcl::PolygonMesh mesh;
-	std::vector<int> verticesToDelete = { 1,2,3 };
+void test(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete) {
 	std::vector<int> polygonsToDelete;
 	for (int i = 0; i < mesh.polygons.size(); i++) {
 		const pcl::Vertices& polygon = mesh.polygons[i];
