@@ -57,16 +57,12 @@ void MainWindow::startRendering(){
                                                 ORI_PLY_PATH,
                                                 TRANS_MESH_PLY_PATH,
                                                 TRANS_MESH_PCD_PATH,
-                                                FINAL_MESH_PASH
-                                                );
-                    
+                                                FINAL_MESH_PASH);
                     myMeshGLWidget->setImageData(meshData);
                     emit signal_glUpdate();
                 }
             }
             if (pointLine >= pointData3D.size()){
-
-
                 pcl::PolygonMesh mesh;
                 pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
 
