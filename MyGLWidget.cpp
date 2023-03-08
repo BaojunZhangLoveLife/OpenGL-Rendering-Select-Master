@@ -101,7 +101,6 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
     QPoint mousePos = event->pos();
     if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
         QVector3D worldPos  = convertScreenToWorld(mousePos);
-
         int nearestVertexIdx = dataProc->findNearestVertex(worldPos, meshVertices);
         if (nearestVertexIdx != -1) {
             pcl::PointXYZ nearestVertex;
