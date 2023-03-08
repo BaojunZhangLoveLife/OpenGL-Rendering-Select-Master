@@ -100,25 +100,27 @@ void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
 void MyGLWidget::mousePressEvent(QMouseEvent* event){
     if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
         QVector3D worldPos  = convertScreenToWorld(event->pos());
-        int vertexIndex = dataProc->findNearestVertex(worldPos, meshVertices);
-        if (vertexIndex != -1) {
-            pcl::PointXYZ query_point;
-            query_point.x = meshVertices[vertexIndex].x();
-            query_point.y = meshVertices[vertexIndex].y();
-            query_point.z = meshVertices[vertexIndex].z();
+        int nearestVertexIdx = dataProc->findNearestVertex(worldPos, meshVertices);
+        if (nearestVertexIdx != -1) {
+            pcl::PointXYZ nearestVertex;
+            nearestVertex.x = meshVertices[nearestVertexIdx].x();
+            nearestVertex.y = meshVertices[nearestVertexIdx].y();
+            nearestVertex.z = meshVertices[nearestVertexIdx].z();
             pcl::PolygonMesh mesh;
             pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
 
-            std::vector<int> toRemove = dataProc->nearestKSearch(mesh, query_point);
-            pcl::io::savePLYFile("C:/Project/OpenGL-Rendering-Master-Build/result111.ply", dataProc->eraseMesh(mesh, toRemove));
+            std::vector<int> toRemove = dataProc->nearestKSearch(mesh, nearestVertex);
+            pcl::io::savePLYFile("C:/Project/OpenGL-Rendering-Master-Build/result111.ply", 
+                dataProc->eraseMesh(mesh, toRemove));
             dataProc->loadMeshData(FINAL_MESH_PASH);
 
-            //for (auto it = toRemove.rbegin(); it != toRemove.rend(); it++){
-            //    meshVertices.erase(meshVertices.begin() + *it);
-            //}
-
-            //surface->construction(meshVertices);
-            //vertices = dataProc->getSurfaceData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
+            /*
+            for (auto it = toRemove.rbegin(); it != toRemove.rend(); it++) {
+                meshVertices.erase(meshVertices.begin() + *it);
+            }
+            surface->construction(meshVertices);
+            vertices = dataProc->getSurfaceData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
+            */
         }
         paintGL();
     }else{
