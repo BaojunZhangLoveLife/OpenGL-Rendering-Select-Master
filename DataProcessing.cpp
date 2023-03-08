@@ -416,7 +416,7 @@ std::vector<float> DataProcessing::getSurfaceData(
 	return 	meshData;
 }
 
-void test(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete) {
+pcl::PolygonMesh test(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete) {
 	std::vector<int> polygonsToDelete;
 	for (int i = 0; i < mesh.polygons.size(); i++) {
 		const pcl::Vertices& polygon = mesh.polygons[i];
@@ -448,4 +448,5 @@ void test(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete) {
 		}
 		mesh.polygons.erase(mesh.polygons.begin() + polygonIndex);
 	}
+	return mesh;
 }
