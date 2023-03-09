@@ -502,19 +502,19 @@ std::vector<float> DataProcessing::getRenderData(std::string oriPlyPath,std::str
 
 pcl::PolygonMesh DataProcessing::eraseMesh(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete) {
 	std::vector<int> polygonsToDelete;
-	for (int i = 0; i < mesh.polygons.size(); i++) {
-		const pcl::Vertices& polygon = mesh.polygons[i];
-		bool deletePolygon = true;
-		for (int j = 0; j < verticesToDelete.size(); j++) {
-			if (std::find(polygon.vertices.begin(), polygon.vertices.end(), verticesToDelete[j]) == polygon.vertices.end()) {
-				deletePolygon = false;
-				break;
-			}
-		}
-		if (deletePolygon) {
-			polygonsToDelete.push_back(i);
-		}
-	}
+	//for (int i = 0; i < mesh.polygons.size(); i++) {
+	//	const pcl::Vertices& polygon = mesh.polygons[i];
+	//	bool deletePolygon = true;
+	//	for (int j = 0; j < verticesToDelete.size(); j++) {
+	//		if (std::find(polygon.vertices.begin(), polygon.vertices.end(), verticesToDelete[j]) == polygon.vertices.end()) {
+	//			deletePolygon = false;
+	//			break;
+	//		}
+	//	}
+	//	if (deletePolygon) {
+	//		polygonsToDelete.push_back(i);
+	//	}
+	//}
 	// Delete polygons containing the vertices to delete
 	for (int i = 0; i < polygonsToDelete.size(); ++i) {
 		int polygonIndex = polygonsToDelete[i];

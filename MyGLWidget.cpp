@@ -126,7 +126,7 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             pcl::PolygonMesh mesh111;
             pcl::io::loadPLYFile(NDC_NORMAL_MESH_PASH, mesh111);
 
-            pcl::Indices toRemove = dataProc->nearestKSearch(mesh,nearestVertex);
+            pcl::Indices toRemove = dataProc->nearestKSearch(mesh111,nearestVertex);
             dataProc->eraseMesh(mesh111, toRemove);
 
 
