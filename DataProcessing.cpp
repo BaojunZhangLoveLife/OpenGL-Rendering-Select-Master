@@ -143,7 +143,7 @@ std::vector<int> DataProcessing::nearestKSearch(pcl::PolygonMesh mesh, pcl::Poin
 }
 
 //Data Type Conversion(transfer mesh object to a ply file)
-void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh,std::string path){
+void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string path){
 	std::ofstream fs;
 	fs.open(path);
 	if (fs){
@@ -386,7 +386,7 @@ std::vector<float> DataProcessing::getSurfaceData(std::string oriPlyPath,std::st
 	getNormalVector(transMeshPcdPath);
 	pcl::PolygonMesh mesh;
 	pcl::io::loadPLYFile(transMeshPlyPath, mesh);
-	mySavePlyFile(mesh, finalMeshPath);
+	mySavePlyFile(mesh, normalsRefined, finalMeshPath);
 	loadMeshData(finalMeshPath.data());
 
 	for (int i = 0, meshLineMarker = 0; i < surfaceData.vecFaceTriangles.size() / 3; i++) {
