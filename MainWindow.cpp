@@ -55,11 +55,6 @@ void MainWindow::startRendering(){
             }
             // Save the final model data that is built
             if (pointLine >= pointData3D.size()){
-                //pcl::PolygonMesh mesh;
-                //pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
-               
-        /*        myMeshGLWidget->meshVertices = meshDataProc->mesh2QVector3D(mesh);*/
-
                 std::fstream fs;
                 fs.open(GL_POINTCLOUD_TXT_PATH,'w');
                 meshData3D.resize(meshDataProc->surfaceData.vecPoints.size() / 3);
