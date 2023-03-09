@@ -53,6 +53,7 @@ public:
 	/// ----------------------------------------
 	void mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D> pointData, std::string path);
 	void mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string savePath);
+	void mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D> pointData, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string path);
 	/// ----------------------------------------
 	/// Convert file to object
 	/// ----------------------------------------
@@ -76,7 +77,7 @@ public:
 	std::vector<QVector3D>		pointData;
 	std::vector<float>			meshData;
 	SurfaceData					surfaceData;
-
+	pcl::PointCloud<pcl::Normal>::Ptr normalsRefined;
 private:
 	void clearMeshData();
 	void getXYZMaxMin();
@@ -85,6 +86,6 @@ private:
 	QVector3D maxCoordinate;
 	QVector3D minCoordinate;
 
-	pcl::PointCloud<pcl::Normal>::Ptr normalsRefined;
+
 
 };

@@ -192,7 +192,51 @@ void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D>
 		fs.close();
 	}
 }
+void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D> pointData, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string path) {
+	std::ofstream fs;
+	fs.open(path);
+	if (fs) {
+		int nr_points = mesh.cloud.width * mesh.cloud.height;
+		int point_size = mesh.cloud.data.size() / nr_points;
+		int nr_faces = mesh.polygons.size();
 
+		// Write header
+		fs << "ply";
+		fs << "\nformat ascii 1.0";
+		fs << "\ncomment PCL generated";
+		// Vertices
+		fs << "\nelement vertex " << mesh.cloud.width * mesh.cloud.height;
+		fs << "\nproperty float x"
+			"\nproperty float y"
+			"\nproperty float z";
+
+		fs << "\nproperty float nx"
+			"\nproperty float ny"
+			"\nproperty float nz";
+		// Faces
+		fs << "\nelement face " << nr_faces;
+		fs << "\nproperty list uchar int vertex_indices";
+		fs << "\nend_header\n";
+
+
+		for (int i = 0; i < pointData.size(); i++) {
+			fs << pointData[i].x() << " " << pointData[i].y() << " " << pointData[i].z() << " " ;
+			fs << normalsRefined->points[i].normal_x << " " << normalsRefined->points[i].normal_y << " " << normalsRefined->points[i].normal_z << " " << "\n";
+
+		}
+
+		// Write down faces
+		for (std::size_t i = 0; i < nr_faces; i++) {
+			fs << mesh.polygons[i].vertices.size() << " ";
+			for (std::size_t j = 0; j < mesh.polygons[i].vertices.size() - 1; ++j)
+				fs << mesh.polygons[i].vertices[j] << " ";
+			fs << mesh.polygons[i].vertices.back() << '\n';
+		}
+		fs.close();
+	}
+
+
+}
 //Data Type Conversion(transfer mesh object to a ply file)
 void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string path){
 	std::ofstream fs;

@@ -117,21 +117,10 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             pcl::io::loadPLYFile(TRANS_MESH_PLY_PATH, mesh);
             dataProc->mySavePlyFile(mesh, dataProc->pointData, NDC_MESH_PASH);
 
-            //pcl::PolygonMesh mesh;
-            //pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
-
-            //std::vector<int> toRemove = dataProc->nearestKSearch(mesh, nearestVertex);
-            //pcl::io::savePLYFile("C:/Project/OpenGL-Rendering-Master-Build/result111.ply", 
-            //    dataProc->eraseMesh(mesh, toRemove));
-            //dataProc->loadMeshData(FINAL_MESH_PASH);
-
-            /*
-            for (auto it = toRemove.rbegin(); it != toRemove.rend(); it++) {
-                meshVertices.erase(meshVertices.begin() + *it);
-            }
-            surface->construction(meshVertices);
-            vertices = dataProc->getRenderData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
-            */
+            pcl::PointCloud<pcl::Normal>::Ptr normalsRefined111;
+            normalsRefined111.reset(new pcl::PointCloud<pcl::Normal>);
+            dataProc->getNormalData(TRANS_MESH_PCD_PATH, normalsRefined111);
+            dataProc->mySavePlyFile(mesh, dataProc->pointData,normalsRefined111, NDC_NORMAL_MESH_PASH);
         }
         paintGL();
     }else{

@@ -27,3 +27,4 @@
 #define FINAL_MESH_PASH			"C:/Project/OpenGL-Rendering-Master-Build/finalMesh.ply"
 
 #define NDC_MESH_PASH			"C:/Project/OpenGL-Rendering-Master-Build/ndcMesh.ply"
+#define NDC_NORMAL_MESH_PASH	"C:/Project/OpenGL-Rendering-Master-Build/ndcNormalMesh.ply"
