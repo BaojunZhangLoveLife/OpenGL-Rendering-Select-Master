@@ -438,7 +438,7 @@ pcl::PolygonMesh DataProcessing::eraseMesh(pcl::PolygonMesh mesh, std::vector<in
 	}
 	return mesh;
 }
-std::vector<QVector3D> DataProcessing::convertPolygonMeshToQVector3D(const pcl::PolygonMesh& mesh) {
+std::vector<QVector3D> DataProcessing::mesh2QVector3D(const pcl::PolygonMesh& mesh) {
 	std::vector<QVector3D> vertices;
 
 	// Get the point cloud from the mesh

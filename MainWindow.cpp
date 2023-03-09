@@ -66,7 +66,7 @@ void MainWindow::startRendering(){
                 //pcl::PolygonMesh mesh;
                 //pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
                
-        /*        myMeshGLWidget->meshVertices = meshDataProc->convertPolygonMeshToQVector3D(mesh);*/
+        /*        myMeshGLWidget->meshVertices = meshDataProc->mesh2QVector3D(mesh);*/
 
                 std::fstream fs;
                 fs.open(GL_POINTCLOUD_TXT_PATH,'w');

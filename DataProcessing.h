@@ -45,20 +45,26 @@ public:
 	/// ----------------------------------------
 	void ply2ply(std::string src, std::string dst);
 	void ply2pcd(std::string ply, std::string pcd);
-	void txt2pcd(std::string filename, std::string pcdPath);
-
-
-	void mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string path);
+	void txt2pcd(std::string txt, std::string pcd);
+	std::vector<QVector3D> mesh2QVector3D(const pcl::PolygonMesh& mesh);
+	/// ----------------------------------------
+	/// Save object to file
+	/// ----------------------------------------
+	void mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string savePath);
+	/// ----------------------------------------
+	/// Convert file to object
+	/// ----------------------------------------
+	std::vector<float> getSurfaceData(std::string oriPlyPath, std::string transMeshPlyPath, std::string transMeshPcdPath, std::string finalMeshPath);
 
 	std::vector<int> nearestKSearch(pcl::PolygonMesh mesh, pcl::PointXYZ query_point);
 	// Find the nearest vertex of the world coordinate point
 	int findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices);
-	std::vector<QVector3D> convertPolygonMeshToQVector3D(const pcl::PolygonMesh& mesh);
 
-	std::vector<float> getSurfaceData(std::string oriPlyPath,std::string transMeshPlyPath,std::string transMeshPcdPath,std::string finalMeshPath);
+
+
 	pcl::PolygonMesh eraseMesh(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete);
 	/// ----------------------------------------
-	/// 
+	/// Change model value
 	/// ----------------------------------------
 	void translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
 	void rotateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave);
