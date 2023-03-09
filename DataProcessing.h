@@ -46,6 +46,7 @@ public:
 	void ply2ply(std::string src, std::string dst);
 	void ply2pcd(std::string ply, std::string pcd);
 	void txt2pcd(std::string txt, std::string pcd);
+	void pcd2txt(std::string pcd, std::string txt);
 	std::vector<QVector3D> mesh2QVector3D(const pcl::PolygonMesh& mesh);
 	/// ----------------------------------------
 	/// Save object to file

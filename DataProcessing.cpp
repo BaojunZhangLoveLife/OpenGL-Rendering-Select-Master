@@ -141,7 +141,15 @@ std::vector<int> DataProcessing::nearestKSearch(pcl::PolygonMesh mesh, pcl::Poin
 	kdtree->nearestKSearch(query_point, 10, k_indices, k_distances);
 	return k_indices;
 }
-
+void DataProcessing::pcd2txt(std::string pcd, std::string txt) {
+	pcl::PCDReader reader;
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	reader.read(pcd, *cloud);
+	ofstream ss(txt);
+	for (int i = 0; i < cloud->points.size(); i++){
+		ss << cloud->points[i].x << "," << cloud->points[i].y << "," << cloud->points[i].z << endl;
+	}
+}
 //Data Type Conversion(transfer mesh object to a ply file)
 void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string path){
 	std::ofstream fs;
