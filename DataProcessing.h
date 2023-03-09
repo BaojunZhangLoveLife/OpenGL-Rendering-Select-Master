@@ -43,7 +43,7 @@ public:
 	/// ----------------------------------------
 	/// Interface for data type conversion
 	/// ----------------------------------------
-	void writePlyData(pcl::PolygonMesh mesh);
+	void writePlyData(pcl::PolygonMesh mesh, std::string path);
 	void ply2ply(std::string src, std::string dst);
 	void ply2pcd(std::string ply, std::string pcd);
 	void txt2pcd(std::string filename, std::string pcdPath);

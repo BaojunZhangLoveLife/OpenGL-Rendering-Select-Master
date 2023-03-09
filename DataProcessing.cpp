@@ -150,9 +150,9 @@ std::vector<int> DataProcessing::nearestKSearch(pcl::PolygonMesh mesh, pcl::Poin
 }
 
 //Data Type Conversion(transfer mesh object to a ply file)
-void DataProcessing::writePlyData(pcl::PolygonMesh mesh){
+void DataProcessing::writePlyData(pcl::PolygonMesh mesh,std::string path){
 	std::ofstream fs;
-	fs.open("C:/Project/OpenGL-Rendering-Master-Build/finalMesh.ply");
+	fs.open(path);
 	if (fs){
 		int nr_points = mesh.cloud.width * mesh.cloud.height;
 		int point_size = mesh.cloud.data.size() / nr_points;
@@ -386,17 +386,13 @@ void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4
 	modelSave = modelSave * modelUse;
 }
 
-std::vector<float> DataProcessing::getSurfaceData(
-								std::string oriPlyPath,
-								std::string transMeshPlyPath,
-								std::string transMeshPcdPath, 
-								std::string finalMeshPath) {
+std::vector<float> DataProcessing::getSurfaceData(std::string oriPlyPath,std::string transMeshPlyPath,std::string transMeshPcdPath, std::string finalMeshPath) {
 	ply2ply(oriPlyPath, transMeshPlyPath);
 	ply2pcd(transMeshPlyPath, transMeshPcdPath);
 	getNormalVector(transMeshPcdPath);
 	pcl::PolygonMesh mesh;
 	pcl::io::loadPLYFile(transMeshPlyPath, mesh);
-	writePlyData(mesh);
+	writePlyData(mesh, finalMeshPath);
 	loadMeshData(finalMeshPath.data());
 
 	for (int i = 0, meshLineMarker = 0; i < surfaceData.vecFaceTriangles.size() / 3; i++) {
