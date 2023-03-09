@@ -107,13 +107,16 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             nearestVertex.x = meshVertices[nearestVertexIdx].x();
             nearestVertex.y = meshVertices[nearestVertexIdx].y();
             nearestVertex.z = meshVertices[nearestVertexIdx].z();
-            pcl::PolygonMesh mesh;
-            pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
 
-            std::vector<int> toRemove = dataProc->nearestKSearch(mesh, nearestVertex);
-            pcl::io::savePLYFile("C:/Project/OpenGL-Rendering-Master-Build/result111.ply", 
-                dataProc->eraseMesh(mesh, toRemove));
-            dataProc->loadMeshData(FINAL_MESH_PASH);
+
+            dataProc->pcd2txt(TRANS_MESH_PCD_PATH,TRANS_MESH_TXT_PATH);
+            //pcl::PolygonMesh mesh;
+            //pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
+
+            //std::vector<int> toRemove = dataProc->nearestKSearch(mesh, nearestVertex);
+            //pcl::io::savePLYFile("C:/Project/OpenGL-Rendering-Master-Build/result111.ply", 
+            //    dataProc->eraseMesh(mesh, toRemove));
+            //dataProc->loadMeshData(FINAL_MESH_PASH);
 
             /*
             for (auto it = toRemove.rbegin(); it != toRemove.rend(); it++) {
