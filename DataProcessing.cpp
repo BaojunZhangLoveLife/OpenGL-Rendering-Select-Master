@@ -43,31 +43,25 @@ void DataProcessing::txt2pcd(std::string filename, std::string pcdPath){
 	std::ifstream fs;
 	pcl::PointCloud<pcl::PointXYZ> cloud;
 	fs.open(filename.c_str(), std::ios::binary);
-	if (!fs.is_open() || fs.fail()){
-		PCL_ERROR("Could not open file '%s'! Error : %s\n", filename.c_str(), strerror(errno));
+	if (fs.is_open()){
+		std::string line;
+		std::vector<std::string> st;
+
+		while (!fs.eof()) {
+			std::getline(fs, line);
+			// Ignore empty lines
+			if (line.empty()) continue;
+			boost::trim(line);
+			boost::split(st, line, boost::is_any_of("\t\r "), boost::token_compress_on);
+
+			if (st.size() != 3)	continue;
+			cloud.push_back(pcl::PointXYZ(float(atof(st[0].c_str())), float(atof(st[1].c_str())), float(atof(st[2].c_str()))));
+		}
 		fs.close();
-		return;
+		cloud.width = cloud.size(); cloud.height = 1; cloud.is_dense = true;
+		pcl::PCDWriter w;
+		w.writeASCII(pcdPath, cloud);
 	}
-	std::string line;
-	std::vector<std::string> st;
-
-	while (!fs.eof()){
-		std::getline(fs, line);
-		// Ignore empty lines
-		if (line.empty())
-			continue;
-		boost::trim(line);
-		boost::split(st, line, boost::is_any_of("\t\r "), boost::token_compress_on);
-
-		if (st.size() != 3)
-			continue;
-		cloud.push_back(pcl::PointXYZ(float(atof(st[0].c_str())), float(atof(st[1].c_str())), float(atof(st[2].c_str()))));
-	}
-	fs.close();
-	cloud.width = cloud.size(); cloud.height = 1; cloud.is_dense = true;
-	pcl::PCDWriter w;
-	w.writeASCII(pcdPath,cloud);
-
 }
 // normalize the original point cloud data
 void DataProcessing::normalize(std::vector<QVector3D> data){
