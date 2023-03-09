@@ -36,7 +36,7 @@ public:
 
 	void loadPointData(const char* filename);
 	void loadMeshData(char* filename);
-
+	
 	void getMeshData(pcl::PolygonMesh meshPath);
 	void getNormalData(std::string cloudPath, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined);
 
@@ -51,6 +51,7 @@ public:
 	/// ----------------------------------------
 	/// Save object to file
 	/// ----------------------------------------
+	void mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D> pointData, std::string path);
 	void mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string savePath);
 	/// ----------------------------------------
 	/// Convert file to object

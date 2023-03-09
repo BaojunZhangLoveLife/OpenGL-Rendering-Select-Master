@@ -110,6 +110,13 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
 
 
             dataProc->pcd2txt(TRANS_MESH_PCD_PATH,TRANS_MESH_TXT_PATH);
+            dataProc->loadPointData(TRANS_MESH_TXT_PATH);
+            dataProc->loadPointDataToNDC(dataProc->pointData);
+
+            pcl::PolygonMesh mesh;
+            pcl::io::loadPLYFile(TRANS_MESH_PLY_PATH, mesh);
+            dataProc->mySavePlyFile(mesh, dataProc->pointData, NDC_MESH_PASH);
+
             //pcl::PolygonMesh mesh;
             //pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);
 

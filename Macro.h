@@ -23,5 +23,7 @@
 #define ORI_PLY_PATH			"C:/Project/OpenGL-Rendering-Master-Build/result.ply"
 #define TRANS_MESH_PLY_PATH		"C:/Project/OpenGL-Rendering-Master-Build/transMesh.ply"
 #define TRANS_MESH_PCD_PATH		"C:/Project/OpenGL-Rendering-Master-Build/transMesh.pcd"
-#define TRANS_MESH_TXT_PATH			"C:/Project/OpenGL-Rendering-Master-Build/transMesh.txt"
+#define TRANS_MESH_TXT_PATH		"C:/Project/OpenGL-Rendering-Master-Build/transMesh.txt"
 #define FINAL_MESH_PASH			"C:/Project/OpenGL-Rendering-Master-Build/finalMesh.ply"
+
+#define NDC_MESH_PASH			"C:/Project/OpenGL-Rendering-Master-Build/ndcMesh.ply"
