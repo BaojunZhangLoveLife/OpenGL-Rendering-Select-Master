@@ -22,23 +22,22 @@ std::string DataProcessing::getProgramPath(){
 	return qAppDir.toStdString().substr(0, iPos);
 }
 void DataProcessing::loadPointData(const char* path){
-	std::fstream readTextData(path);
-	if (!readTextData) return;
+	std::fstream fs(path);
+	if (!fs) return;
 	float x, y, z;
-	while (readTextData >> x >> y >> z){
+	while (fs >> x >> y >> z){
 		QVector3D data = { x, y, z };
 		pointData.emplace_back(data);
 	}
-	readTextData.close();
+	fs.close();
 }
 // get center point of point data.
 void DataProcessing::getCenterPoint(QVector3D& vec){
 	if (0 == pointData.size()) return;
-	vec = {
-		(maxCoordinate.x() + minCoordinate.x()) / 2,
-		(maxCoordinate.y() + minCoordinate.y()) / 2,
-		(maxCoordinate.z() + minCoordinate.z()) / 2
-	};
+	float vecx = (maxCoordinate.x() + minCoordinate.x()) / 2;
+	float vecy = (maxCoordinate.y() + minCoordinate.y()) / 2;
+	float vecz = (maxCoordinate.z() + minCoordinate.z()) / 2;
+	vec = {vecx,vecy,vecz};
 }
 void DataProcessing::txt2pcd(std::string filename, std::string pcdPath){
 	std::ifstream fs;
