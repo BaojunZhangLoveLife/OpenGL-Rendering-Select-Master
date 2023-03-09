@@ -38,12 +38,12 @@ public:
 	void loadMeshData(char* filename);
 
 	void getMeshData(pcl::PolygonMesh meshPath);
-	void getNormalVector(std::string cloudPath);
+	pcl::PointCloud<pcl::Normal>::Ptr getNormalVector(std::string cloudPath);
 
 	/// ----------------------------------------
 	/// Interface for data type conversion
 	/// ----------------------------------------
-	void writePlyData(pcl::PolygonMesh mesh, std::string path);
+	void mySavePlyFile(pcl::PolygonMesh mesh, std::string path);
 	void ply2ply(std::string src, std::string dst);
 	void ply2pcd(std::string ply, std::string pcd);
 	void txt2pcd(std::string filename, std::string pcdPath);

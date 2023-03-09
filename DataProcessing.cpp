@@ -115,20 +115,20 @@ void DataProcessing::getXYZMaxMin(){
 }
 // transform a mesh into a mesh ,the former mesh has various faces(triangle,quadrangle,pentagon.etc), the next mesh has only a triangle face.
 void DataProcessing::ply2ply(std::string src, std::string dst) {
-	vtkSmartPointer<vtkPLYReader> ply2plyPlyReader = vtkSmartPointer<vtkPLYReader>::New();
-	ply2plyPlyReader->SetFileName(src.c_str());
-	ply2plyPlyReader->Update();
+	vtkSmartPointer<vtkPLYReader> reader = vtkSmartPointer<vtkPLYReader>::New();
+	reader->SetFileName(src.c_str());
+	reader->Update();
 
-	vtkSmartPointer<vtkTriangleFilter> ply2plyStlFilter = vtkSmartPointer<vtkTriangleFilter>::New();
-	ply2plyStlFilter->SetInputData(ply2plyPlyReader->GetOutput());
+	vtkSmartPointer<vtkTriangleFilter> filter = vtkSmartPointer<vtkTriangleFilter>::New();
+	filter->SetInputData(reader->GetOutput());
 
-	vtkSmartPointer<vtkPLYWriter> ply2plyPlyWriter = vtkSmartPointer<vtkPLYWriter>::New();
-	ply2plyPlyWriter->SetFileName(dst.c_str());
-	ply2plyPlyWriter->SetInputConnection(ply2plyStlFilter->GetOutputPort());
-	ply2plyPlyWriter->SetFileTypeToASCII();
-	ply2plyPlyWriter->SetColorModeToOff();
-	ply2plyPlyWriter->Update();
-	ply2plyPlyWriter->Write();
+	vtkSmartPointer<vtkPLYWriter> writer = vtkSmartPointer<vtkPLYWriter>::New();
+	writer->SetFileName(dst.c_str());
+	writer->SetInputConnection(filter->GetOutputPort());
+	writer->SetFileTypeToASCII();
+	writer->SetColorModeToOff();
+	writer->Update();
+	writer->Write();
 }
 
 void DataProcessing::ply2pcd(std::string ply, std::string pcd){
@@ -149,7 +149,7 @@ std::vector<int> DataProcessing::nearestKSearch(pcl::PolygonMesh mesh, pcl::Poin
 }
 
 //Data Type Conversion(transfer mesh object to a ply file)
-void DataProcessing::writePlyData(pcl::PolygonMesh mesh,std::string path){
+void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh,std::string path){
 	std::ofstream fs;
 	fs.open(path);
 	if (fs){
@@ -327,7 +327,7 @@ void DataProcessing::getMeshData(pcl::PolygonMesh mesh){
 }
 
 // get normal vector of point cloud
-void DataProcessing::getNormalVector(std::string pcdPath){
+pcl::PointCloud<pcl::Normal>::Ptr DataProcessing::getNormalVector(std::string pcdPath){
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcdPath, *cloud) == -1)  PCL_ERROR("Could not read file\n");
 	
@@ -336,7 +336,7 @@ void DataProcessing::getNormalVector(std::string pcdPath){
 
 	pcl::search::KdTree<pcl::PointXYZ> search;
 	search.setInputCloud(cloud);
-	search.nearestKSearch(*cloud, pcl::Indices(), 50, k_indices, k_sqr_distances);
+	search.nearestKSearch(*cloud, pcl::Indices(), NORMAL_MAX_ITERATIONS, k_indices, k_sqr_distances);
 	pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> ne;
 
 	pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
@@ -348,9 +348,10 @@ void DataProcessing::getNormalVector(std::string pcdPath){
 	}
 	pcl::NormalRefinement<pcl::Normal> nr(k_indices, k_sqr_distances);
 	nr.setInputCloud(normals);
-	nr.setMaxIterations(50);
-	nr.setConvergenceThreshold(0.1);
+	nr.setMaxIterations(NORMAL_MAX_ITERATIONS);
+	nr.setConvergenceThreshold(NORMAL_CONVERGENCE_THRESHOLD);
 	nr.filter(*normalsRefined);
+	return normalsRefined;
 }
 // Find the nearest vertex of the world coordinate point
 int DataProcessing::findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices) {
@@ -391,7 +392,7 @@ std::vector<float> DataProcessing::getSurfaceData(std::string oriPlyPath,std::st
 	getNormalVector(transMeshPcdPath);
 	pcl::PolygonMesh mesh;
 	pcl::io::loadPLYFile(transMeshPlyPath, mesh);
-	writePlyData(mesh, finalMeshPath);
+	mySavePlyFile(mesh, finalMeshPath);
 	loadMeshData(finalMeshPath.data());
 
 	for (int i = 0, meshLineMarker = 0; i < surfaceData.vecFaceTriangles.size() / 3; i++) {
