@@ -108,6 +108,7 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             nearestVertex.y = meshVertices[nearestVertexIdx].y();
             nearestVertex.z = meshVertices[nearestVertexIdx].z();
 
+  
 
             dataProc->pcd2txt(TRANS_MESH_PCD_PATH,TRANS_MESH_TXT_PATH);
             dataProc->loadPointData(TRANS_MESH_TXT_PATH);
@@ -121,6 +122,14 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             normalsRefined111.reset(new pcl::PointCloud<pcl::Normal>);
             dataProc->getNormalData(TRANS_MESH_PCD_PATH, normalsRefined111);
             dataProc->mySavePlyFile(mesh, dataProc->pointData,normalsRefined111, NDC_NORMAL_MESH_PASH);
+
+            pcl::PolygonMesh mesh111;
+            pcl::io::loadPLYFile(NDC_NORMAL_MESH_PASH, mesh111);
+
+            pcl::Indices toRemove = dataProc->nearestKSearch(mesh,nearestVertex);
+            dataProc->eraseMesh(mesh111, toRemove);
+
+
         }
         paintGL();
     }else{

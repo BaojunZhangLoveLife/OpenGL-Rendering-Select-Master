@@ -130,17 +130,7 @@ void DataProcessing::ply2pcd(std::string ply, std::string pcd){
 	pcl::io::loadPLYFile<pcl::PointXYZ>(ply, *cloud);
 	pcl::io::savePCDFile(pcd, *cloud);
 }
-std::vector<int> DataProcessing::nearestKSearch(pcl::PolygonMesh mesh, pcl::PointXYZ query_point) {
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
 
-	pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtree(new pcl::KdTreeFLANN<pcl::PointXYZ>);
-	kdtree->setInputCloud(cloud);
-	std::vector<int> k_indices;
-	std::vector<float> k_distances;
-	kdtree->nearestKSearch(query_point, 10, k_indices, k_distances);
-	return k_indices;
-}
 void DataProcessing::pcd2txt(std::string pcd, std::string txt) {
 	pcl::PCDReader reader;
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -454,6 +444,18 @@ int DataProcessing::findNearestVertex(QVector3D worldPos, std::vector<QVector3D>
 	}
 	return nearestVertexIndex;
 }
+std::vector<int> DataProcessing::nearestKSearch(pcl::PolygonMesh mesh, pcl::PointXYZ query_point) {
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
+
+	pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtree(new pcl::KdTreeFLANN<pcl::PointXYZ>);
+	kdtree->setInputCloud(cloud);
+	std::vector<int> k_indices;
+	std::vector<float> k_distances;
+	kdtree->nearestKSearch(query_point, 10, k_indices, k_distances);
+	return k_indices;
+}
+
 void DataProcessing::rotateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave) {
 	model.setToIdentity();
 	float angleNow = qSqrt(qPow(point.x(), 2) + qPow(point.y(), 2)) / 5;
