@@ -321,7 +321,7 @@ void DataProcessing::getMeshData(pcl::PolygonMesh mesh){
 }
 
 // get normal vector of point cloud
-pcl::PointCloud<pcl::Normal>::Ptr DataProcessing::getNormalVector(std::string pcdPath){
+void DataProcessing::getNormalVector(std::string pcdPath, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined){
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcdPath, *cloud) == -1)  PCL_ERROR("Could not read file\n");
 	
@@ -345,7 +345,6 @@ pcl::PointCloud<pcl::Normal>::Ptr DataProcessing::getNormalVector(std::string pc
 	nr.setMaxIterations(NORMAL_MAX_ITERATIONS);
 	nr.setConvergenceThreshold(NORMAL_CONVERGENCE_THRESHOLD);
 	nr.filter(*normalsRefined);
-	return normalsRefined;
 }
 // Find the nearest vertex of the world coordinate point
 int DataProcessing::findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices) {
@@ -383,7 +382,7 @@ void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4
 std::vector<float> DataProcessing::getSurfaceData(std::string oriPlyPath,std::string transMeshPlyPath,std::string transMeshPcdPath, std::string finalMeshPath) {
 	ply2ply(oriPlyPath, transMeshPlyPath);
 	ply2pcd(transMeshPlyPath, transMeshPcdPath);
-	getNormalVector(transMeshPcdPath);
+	getNormalVector(transMeshPcdPath,normalsRefined);
 	pcl::PolygonMesh mesh;
 	pcl::io::loadPLYFile(transMeshPlyPath, mesh);
 	mySavePlyFile(mesh, normalsRefined, finalMeshPath);

@@ -38,7 +38,7 @@ public:
 	void loadMeshData(char* filename);
 
 	void getMeshData(pcl::PolygonMesh meshPath);
-	pcl::PointCloud<pcl::Normal>::Ptr getNormalVector(std::string cloudPath);
+	void getNormalVector(std::string cloudPath, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined);
 
 	/// ----------------------------------------
 	/// Interface for data type conversion
