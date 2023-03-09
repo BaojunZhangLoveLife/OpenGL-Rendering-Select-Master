@@ -32,7 +32,7 @@ public:
 	// Get the current path of the program
 	std::string getProgramPath();
 	// normalize the original point cloud data
-	void normalize(std::vector<QVector3D> data);
+	void loadPointDataToNDC(std::vector<QVector3D> data);
 
 	void loadPointData(const char* filename);
 	void loadMeshData(char* filename);

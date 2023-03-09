@@ -44,6 +44,7 @@ void MainWindow::startRendering(){
         while (pointLine < pointData3D.size()){
             originalPointData.emplace_back(QVector3D{ pointData3D[pointLine].x(), pointData3D[pointLine].y(), pointData3D[pointLine].z()});
             pointLine++;
+            // Build model and display
             if ((originalPointData.size() >= MIN_POINTS_SIZE_REQUIRED)) {
                 if (((pointLine % MESH_INCREASE_SIZE) == 0) || (pointLine >= pointData3D.size())) {
                     surface->construction(originalPointData);
@@ -52,6 +53,7 @@ void MainWindow::startRendering(){
                     emit signal_glUpdate();
                 }
             }
+            // Save the final model data that is built
             if (pointLine >= pointData3D.size()){
                 //pcl::PolygonMesh mesh;
                 //pcl::io::loadPLYFile(FINAL_MESH_PASH, mesh);

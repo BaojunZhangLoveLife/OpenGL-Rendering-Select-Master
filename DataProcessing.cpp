@@ -64,7 +64,7 @@ void DataProcessing::txt2pcd(std::string filename, std::string pcdPath){
 	}
 }
 // normalize the original point cloud data
-void DataProcessing::normalize(std::vector<QVector3D> data){
+void DataProcessing::loadPointDataToNDC(std::vector<QVector3D> data){
 	pointData = data;
 	getXYZMaxMin();
 
@@ -190,7 +190,7 @@ void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::N
 		fs.close();
 	}
 }
-//Mesh
+// Load mesh data from filename
 void DataProcessing::loadMeshData(char* filename){
 	FILE* file = fopen(filename, "r");
 	if (file){
@@ -238,7 +238,7 @@ void DataProcessing::loadMeshData(char* filename){
 			pointData.emplace_back(data);
 			index += 3;
 		}
-		normalize(pointData);
+		loadPointDataToNDC(pointData);
 		for (int i = 0; i < pointData.size(); i++){
 			surfaceData.vecPoints.emplace_back(pointData[i].x());
 			surfaceData.vecPoints.emplace_back(pointData[i].y());
@@ -309,7 +309,7 @@ void DataProcessing::getMeshData(pcl::PolygonMesh mesh){
 		meshVertex3D[i] = { meshVertex1D[index], meshVertex1D[index+1], meshVertex1D[index+2] };
 		index += 3;
 	}
-	normalize(meshVertex3D);
+	loadPointDataToNDC(meshVertex3D);
 	meshData.clear();
 	for (std::size_t i = 0; i < nr_faces; i++){
 		for (std::size_t j = 0; j < mesh.polygons[i].vertices.size(); j++){
