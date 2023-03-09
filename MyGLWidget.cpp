@@ -120,7 +120,7 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
                 meshVertices.erase(meshVertices.begin() + *it);
             }
             surface->construction(meshVertices);
-            vertices = dataProc->getSurfaceData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
+            vertices = dataProc->getRenderData(ORI_PLY_PATH, TRANS_MESH_PLY_PATH, TRANS_MESH_PCD_PATH, FINAL_MESH_PASH);
             */
         }
         paintGL();

@@ -38,7 +38,7 @@ public:
 	void loadMeshData(char* filename);
 
 	void getMeshData(pcl::PolygonMesh meshPath);
-	void getNormalVector(std::string cloudPath, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined);
+	void getNormalData(std::string cloudPath, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined);
 
 	/// ----------------------------------------
 	/// Interface for data type conversion
@@ -54,7 +54,7 @@ public:
 	/// ----------------------------------------
 	/// Convert file to object
 	/// ----------------------------------------
-	std::vector<float> getSurfaceData(std::string oriPlyPath, std::string transMeshPlyPath, std::string transMeshPcdPath, std::string finalMeshPath);
+	std::vector<float> getRenderData(std::string oriPlyPath, std::string transMeshPlyPath, std::string transMeshPcdPath, std::string finalMeshPath);
 
 	std::vector<int> nearestKSearch(pcl::PolygonMesh mesh, pcl::PointXYZ query_point);
 	// Find the nearest vertex of the world coordinate point

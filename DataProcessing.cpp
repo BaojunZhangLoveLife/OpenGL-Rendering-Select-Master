@@ -321,30 +321,30 @@ void DataProcessing::getMeshData(pcl::PolygonMesh mesh){
 }
 
 // get normal vector of point cloud
-void DataProcessing::getNormalVector(std::string pcdPath, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined){
+void DataProcessing::getNormalData(std::string pcdPath, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined){
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-	if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcdPath, *cloud) == -1)  PCL_ERROR("Could not read file\n");
-	
-	std::vector<pcl::Indices> k_indices;
-	std::vector<std::vector<float>> k_sqr_distances;
+	if (pcl::io::loadPCDFile<pcl::PointXYZ>(pcdPath, *cloud) != -1) {
+		std::vector<pcl::Indices> k_indices;
+		std::vector<std::vector<float>> k_sqr_distances;
 
-	pcl::search::KdTree<pcl::PointXYZ> search;
-	search.setInputCloud(cloud);
-	search.nearestKSearch(*cloud, pcl::Indices(), NORMAL_MAX_ITERATIONS, k_indices, k_sqr_distances);
-	pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> ne;
+		pcl::search::KdTree<pcl::PointXYZ> search;
+		search.setInputCloud(cloud);
+		search.nearestKSearch(*cloud, pcl::Indices(), NORMAL_MAX_ITERATIONS, k_indices, k_sqr_distances);
+		pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> ne;
 
-	pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
-	for (size_t i = 0; i < cloud->size(); ++i){
-		pcl::Normal normal;
-		ne.computePointNormal(*cloud, k_indices[i], normal.normal_x, normal.normal_y, normal.normal_z, normal.curvature);
-		pcl::flipNormalTowardsViewpoint((*cloud)[i], (*cloud).sensor_origin_[0], (*cloud).sensor_origin_[1], (*cloud).sensor_origin_[2], normal.normal_x, normal.normal_y, normal.normal_z);
-		normals->emplace_back(normal);
+		pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
+		for (size_t i = 0; i < cloud->size(); ++i) {
+			pcl::Normal normal;
+			ne.computePointNormal(*cloud, k_indices[i], normal.normal_x, normal.normal_y, normal.normal_z, normal.curvature);
+			pcl::flipNormalTowardsViewpoint((*cloud)[i], (*cloud).sensor_origin_[0], (*cloud).sensor_origin_[1], (*cloud).sensor_origin_[2], normal.normal_x, normal.normal_y, normal.normal_z);
+			normals->emplace_back(normal);
+		}
+		pcl::NormalRefinement<pcl::Normal> nr(k_indices, k_sqr_distances);
+		nr.setInputCloud(normals);
+		nr.setMaxIterations(NORMAL_MAX_ITERATIONS);
+		nr.setConvergenceThreshold(NORMAL_CONVERGENCE_THRESHOLD);
+		nr.filter(*normalsRefined);
 	}
-	pcl::NormalRefinement<pcl::Normal> nr(k_indices, k_sqr_distances);
-	nr.setInputCloud(normals);
-	nr.setMaxIterations(NORMAL_MAX_ITERATIONS);
-	nr.setConvergenceThreshold(NORMAL_CONVERGENCE_THRESHOLD);
-	nr.filter(*normalsRefined);
 }
 // Find the nearest vertex of the world coordinate point
 int DataProcessing::findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices) {
@@ -379,10 +379,10 @@ void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4
 	modelSave = modelSave * modelUse;
 }
 
-std::vector<float> DataProcessing::getSurfaceData(std::string oriPlyPath,std::string transMeshPlyPath,std::string transMeshPcdPath, std::string finalMeshPath) {
+std::vector<float> DataProcessing::getRenderData(std::string oriPlyPath,std::string transMeshPlyPath,std::string transMeshPcdPath, std::string finalMeshPath) {
 	ply2ply(oriPlyPath, transMeshPlyPath);
 	ply2pcd(transMeshPlyPath, transMeshPcdPath);
-	getNormalVector(transMeshPcdPath,normalsRefined);
+	getNormalData(transMeshPcdPath,normalsRefined);
 	pcl::PolygonMesh mesh;
 	pcl::io::loadPLYFile(transMeshPlyPath, mesh);
 	mySavePlyFile(mesh, normalsRefined, finalMeshPath);
