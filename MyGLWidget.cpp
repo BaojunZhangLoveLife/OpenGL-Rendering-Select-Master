@@ -195,16 +195,6 @@ QVector3D MyGLWidget::convertScreenToWorld(QPoint screenPoint) {
         }
     }
     double worldX, worldY, worldZ;
-    gluUnProject(
-        screenPoint.x(), 
-        height() - screenPoint.y(),
-        0, 
-        modelViewMatrix, 
-        projectionMatrix, 
-        viewport,
-        &worldX,
-        &worldY,
-        &worldZ
-    );
+    gluUnProject(screenPoint.x(), height() - screenPoint.y(),0, modelViewMatrix, projectionMatrix, viewport,&worldX,&worldY,&worldZ);
     return QVector3D(worldX, worldY, worldZ);
 }
