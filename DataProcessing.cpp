@@ -39,30 +39,7 @@ void DataProcessing::getCenterPoint(QVector3D& vec){
 	float vecz = (maxCoordinate.z() + minCoordinate.z()) / 2;
 	vec = {vecx,vecy,vecz};
 }
-void DataProcessing::txt2pcd(std::string filename, std::string pcdPath){
-	std::ifstream fs;
-	pcl::PointCloud<pcl::PointXYZ> cloud;
-	fs.open(filename.c_str(), std::ios::binary);
-	if (fs.is_open()){
-		std::string line;
-		std::vector<std::string> st;
 
-		while (!fs.eof()) {
-			std::getline(fs, line);
-			// Ignore empty lines
-			if (line.empty()) continue;
-			boost::trim(line);
-			boost::split(st, line, boost::is_any_of("\t\r "), boost::token_compress_on);
-
-			if (st.size() != 3)	continue;
-			cloud.push_back(pcl::PointXYZ(float(atof(st[0].c_str())), float(atof(st[1].c_str())), float(atof(st[2].c_str()))));
-		}
-		fs.close();
-		cloud.width = cloud.size(); cloud.height = 1; cloud.is_dense = true;
-		pcl::PCDWriter w;
-		w.writeASCII(pcdPath, cloud);
-	}
-}
 // normalize the original point cloud data
 void DataProcessing::loadPointDataToNDC(std::vector<QVector3D> data){
 	pointData = data;
@@ -107,6 +84,11 @@ void DataProcessing::getXYZMaxMin(){
 	maxCoordinate = vecMax;
 	minCoordinate = vecMin;
 }
+
+/// ----------------------------------------------------------------------------------
+///								Interface for data type conversion
+/// -----------------------------------------------------------------------------------
+
 // transform a mesh into a mesh ,the former mesh has various faces(triangle,quadrangle,pentagon.etc), the next mesh has only a triangle face.
 void DataProcessing::ply2ply(std::string src, std::string dst) {
 	vtkSmartPointer<vtkPLYReader> reader = vtkSmartPointer<vtkPLYReader>::New();
@@ -130,21 +112,42 @@ void DataProcessing::ply2pcd(std::string ply, std::string pcd){
 	pcl::io::loadPLYFile<pcl::PointXYZ>(ply, *cloud);
 	pcl::io::savePCDFile(pcd, *cloud);
 }
+void DataProcessing::txt2pcd(std::string filename, std::string pcdPath) {
+	std::ifstream fs;
+	pcl::PointCloud<pcl::PointXYZ> cloud;
+	fs.open(filename.c_str(), std::ios::binary);
+	if (fs.is_open()) {
+		std::string line;
+		std::vector<std::string> st;
 
+		while (!fs.eof()) {
+			std::getline(fs, line);
+			// Ignore empty lines
+			if (line.empty()) continue;
+			boost::trim(line);
+			boost::split(st, line, boost::is_any_of("\t\r "), boost::token_compress_on);
+
+			if (st.size() != 3)	continue;
+			cloud.push_back(pcl::PointXYZ(float(atof(st[0].c_str())), float(atof(st[1].c_str())), float(atof(st[2].c_str()))));
+		}
+		fs.close();
+		cloud.width = cloud.size(); cloud.height = 1; cloud.is_dense = true;
+		pcl::PCDWriter w;
+		w.writeASCII(pcdPath, cloud);
+	}
+}
 void DataProcessing::pcd2txt(std::string pcd, std::string txt) {
 	pcl::PCDReader reader;
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	reader.read(pcd, *cloud);
 	ofstream ss(txt);
-	for (int i = 0; i < cloud->points.size(); i++){
-		ss << cloud->points[i].x << " " << cloud->points[i].y << " " << cloud->points[i].z << endl;
-	}
+	for (int i = 0; i < cloud->points.size(); i++) ss << cloud->points[i].x << " " << cloud->points[i].y << " " << cloud->points[i].z << endl;
 }
 //Data Type Conversion(transfer mesh object to a ply file)
 void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D> pointData, std::string path) {
 	std::ofstream fs;
 	fs.open(path);
-	if (fs) {
+	if (fs.is_open()) {
 		int nr_points = mesh.cloud.width * mesh.cloud.height;
 		int point_size = mesh.cloud.data.size() / nr_points;
 		int nr_faces = mesh.polygons.size();
@@ -185,7 +188,7 @@ void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D>
 void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D> pointData, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string path) {
 	std::ofstream fs;
 	fs.open(path);
-	if (fs) {
+	if (fs.is_open()) {
 		int nr_points = mesh.cloud.width * mesh.cloud.height;
 		int point_size = mesh.cloud.data.size() / nr_points;
 		int nr_faces = mesh.polygons.size();
@@ -224,14 +227,12 @@ void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D>
 		}
 		fs.close();
 	}
-
-
 }
 //Data Type Conversion(transfer mesh object to a ply file)
 void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string path){
 	std::ofstream fs;
 	fs.open(path);
-	if (fs){
+	if (fs.is_open()){
 		int nr_points = mesh.cloud.width * mesh.cloud.height;
 		int point_size = mesh.cloud.data.size() / nr_points;
 		int nr_faces = mesh.polygons.size();
@@ -288,9 +289,8 @@ void DataProcessing::loadMeshData(char* filename){
 		char buffer[MESH_BUFFER_MAX_SIZE];
 		fgets(buffer, MESH_BUFFER_SIZE, file);
 		// Find total vertex
-		while (strncmp("element vertex", buffer, strlen("element vertex")) != 0){
-			fgets(buffer, MESH_BUFFER_SIZE, file);
-		}
+		while (strncmp("element vertex", buffer, strlen("element vertex")) != 0) fgets(buffer, MESH_BUFFER_SIZE, file);
+		
 		strcpy(buffer, buffer + strlen("element vertex"));
 
 		int surfaceTotalConnectedPoints;
@@ -306,9 +306,8 @@ void DataProcessing::loadMeshData(char* filename){
 		sscanf(buffer, "%d", &surfaceTotalFaces);
 
 		// go to end_header
-		while (strncmp("end_header", buffer, strlen("end_header")) != 0){
-			fgets(buffer, MESH_BUFFER_SIZE, file);
-		}
+		while (strncmp("end_header", buffer, strlen("end_header")) != 0) fgets(buffer, MESH_BUFFER_SIZE, file);
+		
 
 		// read vertices
 		for (int iterator = 0,index = 0; iterator < surfaceTotalConnectedPoints; iterator++){
@@ -520,7 +519,7 @@ pcl::PolygonMesh DataProcessing::eraseMesh(pcl::PolygonMesh mesh, std::vector<in
 		}
 	}
 	mesh.polygons = polygons;
-	pcl::io::savePLYFile("C:/Project/OpenGL-Rendering-Master-Build/ndcNormalMesh111.ply", mesh);
+	pcl::io::savePLYFile(ERASE_MESH_PASH, mesh);
 	return mesh;
 }
 std::vector<QVector3D> DataProcessing::mesh2QVector3D(const pcl::PolygonMesh& mesh) {
