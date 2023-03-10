@@ -129,9 +129,8 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             pcl::Indices toRemove = dataProc->nearestKSearch(mesh111,nearestVertex);
             dataProc->eraseMesh(mesh111, toRemove);
 
-            dataProc->loadMeshData("C:/Project/OpenGL-Rendering-Master-Build/ndcNormalMesh111.ply");
-            std::vector<float>			meshData;
-   
+            dataProc->loadMeshData(ERASE_MESH_PASH);
+            std::vector<float> meshData;
             for (int i = 0, meshLineMarker = 0; i < dataProc->surfaceData.vecFaceTriangles.size() / 3; i++) {
                 if (i == 0) meshData.clear();
                 meshData.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker]);

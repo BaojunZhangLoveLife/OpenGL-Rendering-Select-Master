@@ -28,3 +28,4 @@
 
 #define NDC_MESH_PASH			"C:/Project/OpenGL-Rendering-Master-Build/ndcMesh.ply"
 #define NDC_NORMAL_MESH_PASH	"C:/Project/OpenGL-Rendering-Master-Build/ndcNormalMesh.ply"
+#define ERASE_MESH_PASH			"C:/Project/OpenGL-Rendering-Master-Build/eraseMesh.ply"
