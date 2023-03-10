@@ -5,7 +5,7 @@
 #include <QMatrix4x4>
 
 DataProcessing::DataProcessing() {
-	normalsRefined.reset(new pcl::PointCloud<pcl::Normal>);
+
 }
 DataProcessing::~DataProcessing() {
 
@@ -142,6 +142,18 @@ void DataProcessing::pcd2txt(std::string pcd, std::string txt) {
 	reader.read(pcd, *cloud);
 	ofstream ss(txt);
 	for (int i = 0; i < cloud->points.size(); i++) ss << cloud->points[i].x << " " << cloud->points[i].y << " " << cloud->points[i].z << endl;
+}
+std::vector<QVector3D> DataProcessing::mesh2QVector3D(const pcl::PolygonMesh& mesh) {
+	std::vector<QVector3D> vertices;
+	// Get the point cloud from the mesh
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
+	// Convert each point to a QVector3D
+	for (const auto& point : cloud->points) {
+		QVector3D vertex(point.x, point.y, point.z);
+		vertices.push_back(vertex);
+	}
+	return vertices;
 }
 //Data Type Conversion(transfer mesh object to a ply file)
 void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D> pointData, std::string path) {
@@ -476,6 +488,7 @@ void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4
 }
 
 std::vector<float> DataProcessing::getRenderData(std::string oriPlyPath,std::string transMeshPlyPath,std::string transMeshPcdPath, std::string finalMeshPath) {
+	normalsRefined.reset(new pcl::PointCloud<pcl::Normal>);
 	ply2ply(oriPlyPath, transMeshPlyPath);
 	ply2pcd(transMeshPlyPath, transMeshPcdPath);
 	getNormalData(transMeshPcdPath,normalsRefined);
@@ -521,19 +534,4 @@ pcl::PolygonMesh DataProcessing::eraseMesh(pcl::PolygonMesh mesh, std::vector<in
 	mesh.polygons = polygons;
 	pcl::io::savePLYFile(ERASE_MESH_PASH, mesh);
 	return mesh;
-}
-std::vector<QVector3D> DataProcessing::mesh2QVector3D(const pcl::PolygonMesh& mesh) {
-	std::vector<QVector3D> vertices;
-
-	// Get the point cloud from the mesh
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
-
-	// Convert each point to a QVector3D
-	for (const auto& point : cloud->points) {
-		QVector3D vertex(point.x, point.y, point.z);
-		vertices.push_back(vertex);
-	}
-
-	return vertices;
 }
