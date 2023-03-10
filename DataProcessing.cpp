@@ -155,6 +155,10 @@ std::vector<QVector3D> DataProcessing::mesh2QVector3D(const pcl::PolygonMesh& me
 	}
 	return vertices;
 }
+
+/// ---------------------------------------------------------------------------------
+///						Save object to file
+/// ---------------------------------------------------------------------------------
 //Data Type Conversion(transfer mesh object to a ply file)
 void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D> pointData, std::string path) {
 	std::ofstream fs;
@@ -240,7 +244,6 @@ void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, std::vector<QVector3D>
 		fs.close();
 	}
 }
-//Data Type Conversion(transfer mesh object to a ply file)
 void DataProcessing::mySavePlyFile(pcl::PolygonMesh mesh, pcl::PointCloud<pcl::Normal>::Ptr normalsRefined, std::string path){
 	std::ofstream fs;
 	fs.open(path);
@@ -466,27 +469,6 @@ std::vector<int> DataProcessing::nearestKSearch(pcl::PolygonMesh mesh, pcl::Poin
 	kdtree->nearestKSearch(query_point, 10, k_indices, k_distances);
 	return k_indices;
 }
-
-void DataProcessing::rotateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave) {
-	model.setToIdentity();
-	float angleNow = qSqrt(qPow(point.x(), 2) + qPow(point.y(), 2)) / 5;
-	model.rotate(angleNow, -point.y(), point.x(), 0.0);
-	model = model * modelUse;
-	;
-	modelSave.setToIdentity();
-	modelSave.rotate(angleNow, -point.y(), point.x(), 0.0);
-	modelSave = modelSave * modelUse;
-}
-void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave) {
-	model.setToIdentity();
-	model.translate((float)point.x() / 200, (float)point.y() / 200);
-	model = model * modelUse;
-
-	modelSave.setToIdentity();
-	modelSave.translate((float)point.x() / 200, (float)point.y() / 200);
-	modelSave = modelSave * modelUse;
-}
-
 std::vector<float> DataProcessing::getRenderData(std::string oriPlyPath,std::string transMeshPlyPath,std::string transMeshPcdPath, std::string finalMeshPath) {
 	normalsRefined.reset(new pcl::PointCloud<pcl::Normal>);
 	ply2ply(oriPlyPath, transMeshPlyPath);
@@ -534,4 +516,26 @@ pcl::PolygonMesh DataProcessing::eraseMesh(pcl::PolygonMesh mesh, std::vector<in
 	mesh.polygons = polygons;
 	pcl::io::savePLYFile(ERASE_MESH_PASH, mesh);
 	return mesh;
+}
+/// -----------------------------------------------------------------
+///						Change model value
+/// ------------------------------------------------------------------
+void DataProcessing::rotateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave) {
+	model.setToIdentity();
+	float angleNow = qSqrt(qPow(point.x(), 2) + qPow(point.y(), 2)) / 5;
+	model.rotate(angleNow, -point.y(), point.x(), 0.0);
+	model = model * modelUse;
+	;
+	modelSave.setToIdentity();
+	modelSave.rotate(angleNow, -point.y(), point.x(), 0.0);
+	modelSave = modelSave * modelUse;
+}
+void DataProcessing::translateModel(QPoint& point, QMatrix4x4& model, QMatrix4x4& modelUse, QMatrix4x4& modelSave) {
+	model.setToIdentity();
+	model.translate((float)point.x() / 200, (float)point.y() / 200);
+	model = model * modelUse;
+
+	modelSave.setToIdentity();
+	modelSave.translate((float)point.x() / 200, (float)point.y() / 200);
+	modelSave = modelSave * modelUse;
 }

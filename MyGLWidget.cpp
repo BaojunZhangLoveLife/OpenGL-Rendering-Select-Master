@@ -83,24 +83,10 @@ void MyGLWidget::paintGL(){
 void MyGLWidget::resizeGL(int width, int height){
     glFunc->glViewport(0, 0, width, height);
 }
-
-void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
-    QPoint mousePosition = event->pos();
-    convertPoint(mousePosition);
-    QPoint subPoint = mousePosition - pressPosition;
-    if (event->buttons() & Qt::LeftButton) {
-        dataProc->rotateModel(subPoint, model, modelUse, modelSave);
-    }
-    if (event->buttons() & Qt::RightButton) {
-        dataProc->translateModel(subPoint, model, modelUse, modelSave);
-    }
-    update();
-}
-
-void MyGLWidget::mousePressEvent(QMouseEvent* event){
+void MyGLWidget::mousePressEvent(QMouseEvent* event) {
     QPoint mousePos = event->pos();
     if (isShiftPressed && (event->buttons() & Qt::LeftButton)) {
-        QVector3D worldPos  = convertScreenToWorld(mousePos);
+        QVector3D worldPos = convertScreenToWorld(mousePos);
         int nearestVertexIdx = dataProc->findNearestVertex(worldPos, meshVertices);
         if (nearestVertexIdx != -1) {
             pcl::PointXYZ nearestVertex;
@@ -108,9 +94,7 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             nearestVertex.y = meshVertices[nearestVertexIdx].y();
             nearestVertex.z = meshVertices[nearestVertexIdx].z();
 
-  
-
-            dataProc->pcd2txt(TRANS_MESH_PCD_PATH,TRANS_MESH_TXT_PATH);
+            dataProc->pcd2txt(TRANS_MESH_PCD_PATH, TRANS_MESH_TXT_PATH);
             dataProc->loadPointData(TRANS_MESH_TXT_PATH);
             dataProc->loadPointDataToNDC(dataProc->pointData);
 
@@ -121,12 +105,12 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             pcl::PointCloud<pcl::Normal>::Ptr normalsRefined111;
             normalsRefined111.reset(new pcl::PointCloud<pcl::Normal>);
             dataProc->getNormalData(TRANS_MESH_PCD_PATH, normalsRefined111);
-            dataProc->mySavePlyFile(mesh, dataProc->pointData,normalsRefined111, NDC_NORMAL_MESH_PASH);
+            dataProc->mySavePlyFile(mesh, dataProc->pointData, normalsRefined111, NDC_NORMAL_MESH_PASH);
 
             pcl::PolygonMesh mesh111;
             pcl::io::loadPLYFile(NDC_NORMAL_MESH_PASH, mesh111);
 
-            pcl::Indices toRemove = dataProc->nearestKSearch(mesh111,nearestVertex);
+            pcl::Indices toRemove = dataProc->nearestKSearch(mesh111, nearestVertex);
             dataProc->eraseMesh(mesh111, toRemove);
 
             dataProc->loadMeshData(ERASE_MESH_PASH);
@@ -146,15 +130,27 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             setImageData(meshData);
         }
         update();
-    }else{
+    }
+    else {
         setPressPosition(mousePos);
         modelUse = modelSave;
     }
 }
-
 void MyGLWidget::mouseReleaseEvent(QMouseEvent* event) {
     setPressPosition(event->pos());
     modelUse = modelSave;
+}
+void MyGLWidget::mouseMoveEvent(QMouseEvent* event){
+    QPoint mousePosition = event->pos();
+    convertPoint(mousePosition);
+    QPoint subPoint = mousePosition - pressPosition;
+    if (event->buttons() & Qt::LeftButton) {
+        dataProc->rotateModel(subPoint, model, modelUse, modelSave);
+    }
+    if (event->buttons() & Qt::RightButton) {
+        dataProc->translateModel(subPoint, model, modelUse, modelSave);
+    }
+    update();
 }
 void MyGLWidget::wheelEvent(QWheelEvent* event) {
     QPoint offset = event->angleDelta();
