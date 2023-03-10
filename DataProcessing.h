@@ -59,7 +59,7 @@ public:
 	/// ----------------------------------------
 	std::vector<float> getRenderData(std::string oriPlyPath, std::string transMeshPlyPath, std::string transMeshPcdPath, std::string finalMeshPath);
 
-	std::vector<int> nearestKSearch(pcl::PolygonMesh mesh, pcl::PointXYZ query_point);
+	std::vector<int> findKNeighbors(pcl::PolygonMesh mesh, pcl::PointXYZ query_point);
 	// Find the nearest vertex of the world coordinate point
 	int findNearestVertex(QVector3D worldPos, std::vector<QVector3D> meshVertices);
 

@@ -458,7 +458,7 @@ int DataProcessing::findNearestVertex(QVector3D worldPos, std::vector<QVector3D>
 	}
 	return nearestVertexIndex;
 }
-std::vector<int> DataProcessing::nearestKSearch(pcl::PolygonMesh mesh, pcl::PointXYZ query_point) {
+std::vector<int> DataProcessing::findKNeighbors(pcl::PolygonMesh mesh, pcl::PointXYZ query_point) {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
 
