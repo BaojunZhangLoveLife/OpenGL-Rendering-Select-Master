@@ -501,37 +501,26 @@ std::vector<float> DataProcessing::getRenderData(std::string oriPlyPath,std::str
 }
 
 pcl::PolygonMesh DataProcessing::eraseMesh(pcl::PolygonMesh mesh, std::vector<int> verticesToDelete) {
-	std::vector<int> polygonsToDelete;
-	//for (int i = 0; i < mesh.polygons.size(); i++) {
-	//	const pcl::Vertices& polygon = mesh.polygons[i];
-	//	bool deletePolygon = true;
-	//	for (int j = 0; j < verticesToDelete.size(); j++) {
-	//		if (std::find(polygon.vertices.begin(), polygon.vertices.end(), verticesToDelete[j]) == polygon.vertices.end()) {
-	//			deletePolygon = false;
-	//			break;
-	//		}
-	//	}
-	//	if (deletePolygon) {
-	//		polygonsToDelete.push_back(i);
-	//	}
-	//}
-	// Delete polygons containing the vertices to delete
-	for (int i = 0; i < polygonsToDelete.size(); ++i) {
-		int polygonIndex = polygonsToDelete[i];
-		const pcl::Vertices& polygon = mesh.polygons[polygonIndex];
-
-		// Remove references to this polygon from other polygons
-		for (int j = 0; j < mesh.polygons.size(); ++j) {
-			if (j != polygonIndex) {
-				pcl::Vertices& otherPolygon = mesh.polygons[j];
-				auto it = std::find(otherPolygon.vertices.begin(), otherPolygon.vertices.end(), polygon.vertices[0]);
-				if (it != otherPolygon.vertices.end()) {
-					otherPolygon.vertices.erase(it);
-				}
+	// 遍历所有面并删除包含要删除的索引的面
+	std::vector<pcl::Vertices>& polygons = mesh.polygons;
+	for (int i = 0; i < polygons.size(); ++i) {
+		pcl::Vertices& vertices = polygons[i];
+		bool should_remove_polygon = false;
+		for (int j = 0; j < verticesToDelete.size(); ++j) {
+			int index = verticesToDelete[j];
+			if (std::find(vertices.vertices.begin(), vertices.vertices.end(), index) != vertices.vertices.end()) {
+				// 如果面中包含要删除的索引，则将其删除
+				should_remove_polygon = true;
+				break;
 			}
 		}
-		mesh.polygons.erase(mesh.polygons.begin() + polygonIndex);
+		if (should_remove_polygon) {
+			polygons.erase(polygons.begin() + i);
+			--i;
+		}
 	}
+	mesh.polygons = polygons;
+	pcl::io::savePLYFile("C:/Project/OpenGL-Rendering-Master-Build/ndcNormalMesh111.ply", mesh);
 	return mesh;
 }
 std::vector<QVector3D> DataProcessing::mesh2QVector3D(const pcl::PolygonMesh& mesh) {

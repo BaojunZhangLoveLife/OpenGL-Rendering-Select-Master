@@ -129,9 +129,24 @@ void MyGLWidget::mousePressEvent(QMouseEvent* event){
             pcl::Indices toRemove = dataProc->nearestKSearch(mesh111,nearestVertex);
             dataProc->eraseMesh(mesh111, toRemove);
 
+            dataProc->loadMeshData("C:/Project/OpenGL-Rendering-Master-Build/ndcNormalMesh111.ply");
+            std::vector<float>			meshData;
+   
+            for (int i = 0, meshLineMarker = 0; i < dataProc->surfaceData.vecFaceTriangles.size() / 3; i++) {
+                if (i == 0) meshData.clear();
+                meshData.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker]);
+                meshData.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker + 1]);
+                meshData.emplace_back(dataProc->surfaceData.vecFaceTriangles[meshLineMarker + 2]);
 
+                meshData.emplace_back(dataProc->surfaceData.vecVertexNormals[meshLineMarker]);
+                meshData.emplace_back(dataProc->surfaceData.vecVertexNormals[meshLineMarker + 1]);
+                meshData.emplace_back(dataProc->surfaceData.vecVertexNormals[meshLineMarker + 2]);
+
+                meshLineMarker += 3;
+            }
+            setImageData(meshData);
         }
-        paintGL();
+        update();
     }else{
         setPressPosition(mousePos);
         modelUse = modelSave;
