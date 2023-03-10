@@ -19,7 +19,6 @@ MyGLWidget::MyGLWidget(QWidget* parent){
 
 MyGLWidget::~MyGLWidget(){
     delete meshShader;
-    //delete selectShader;
     glFunc->glDeleteVertexArrays(1, &meshVAO);
     glFunc->glDeleteBuffers(1, &meshVBO);
 }

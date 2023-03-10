@@ -54,7 +54,6 @@ protected:
   
 private:
     ShaderProgram* meshShader;
-    ShaderProgram* selectShader;
     QMatrix4x4 model;
     QMatrix4x4 modelUse;
     QMatrix4x4 modelSave;
